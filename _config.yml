@@ -1,0 +1,19 @@
+# Jekyll & GitHub Pages Configuration for indirect-b.github.io
+title: "محمد طاها عزیزی احد | Mohammad Taha Azizi Ahad"
+tagline: "Mobile Developer (Android / Kotlin) & Linux User · AI Automation & Full-Stack"
+description: >-
+  توسعه‌دهنده اپلیکیشن‌های بومی اندروید (Kotlin & Compose)، سیستم‌های رمزنگاری وب و اتوماسیون هوش مصنوعی.
+url: "https://indirect-b.github.io"
+baseurl: ""
+
+author:
+  name: "محمد طاها عزیزی احد"
+  english_name: "Mohammad Taha Azizi Ahad"
+  github: "indirect-b"
+  bio: "Mobile Developer & Linux user. Creating native Android apps and exploring AI automation."
+
+lang: "fa-IR"
+direction: "rtl"
+timezone: "Asia/Tehran"
+markdown: kramdown
+highlighter: rouge
