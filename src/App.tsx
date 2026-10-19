@@ -6,6 +6,15 @@ import {
   SiteConfig,
   generateJekyllFiles,
 } from './data/portfolioData';
+import {
+  SUPPORTED_LOCALES,
+  SupportedLocale,
+  TRANSLATIONS,
+  detectFallbackLocaleFromEnvironment,
+  detectLocaleByIp,
+  getLocalizedProject,
+  getLocalizedSiteConfig,
+} from './data/i18n';
 import { ProjectArtwork } from './components/ProjectArtwork';
 import {
   ExternalLink,
@@ -14,26 +23,58 @@ import {
   Download,
   X,
   Search,
+  ArrowUpRight,
   ArrowUpLeft,
   FolderGit2,
   RefreshCw,
   Code2,
   Sun,
   Moon,
+  Globe,
 } from 'lucide-react';
 
 export default function App() {
-  const [siteConfig, setSiteConfig] = useState<SiteConfig>(INITIAL_SITE_CONFIG);
-  const [projects, setProjects] = useState<ProjectItem[]>(INITIAL_PROJECTS);
+  // Start with immediate timezone/navigator hint, then refine automatically via Geo-IP
+  const [locale, setLocale] = useState<SupportedLocale>(() => {
+    return detectFallbackLocaleFromEnvironment().locale;
+  });
+  const [detectedCountry, setDetectedCountry] = useState<string>('');
+  const [baseConfig, setBaseConfig] = useState<SiteConfig>(INITIAL_SITE_CONFIG);
+  const [rawProjects, setRawProjects] = useState<ProjectItem[]>(INITIAL_PROJECTS);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
-  const [activeProjectModal, setActiveProjectModal] = useState<ProjectItem | null>(null);
+  const [activeProjectSlug, setActiveProjectSlug] = useState<string | null>(null);
   const [activeJekyllFile, setActiveJekyllFile] = useState<string>('_config.yml');
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const [isJekyllDrawerOpen, setIsJekyllDrawerOpen] = useState<boolean>(false);
   const [isSyncingGithub, setIsSyncingGithub] = useState<boolean>(false);
   const [syncNotice, setSyncNotice] = useState<string | null>(null);
   const [avatarError, setAvatarError] = useState<boolean>(false);
+
+  const localeMeta = useMemo(
+    () => SUPPORTED_LOCALES.find((l) => l.code === locale) || SUPPORTED_LOCALES[0],
+    [locale]
+  );
+  const t = TRANSLATIONS[locale];
+
+  // Sync HTML dir and lang attributes dynamically when locale changes
+  useEffect(() => {
+    document.documentElement.dir = localeMeta.dir;
+    document.documentElement.lang = localeMeta.htmlLang;
+  }, [localeMeta]);
+
+  // Automatic Geo-IP Language Detection on page load
+  useEffect(() => {
+    let active = true;
+    detectLocaleByIp().then((res) => {
+      if (!active) return;
+      setLocale(res.locale);
+      setDetectedCountry(res.countryCode);
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   // Automatically fetch latest repo stars/updates from github.com/indirect-b on mount
   useEffect(() => {
@@ -49,7 +90,7 @@ export default function App() {
         const userData = await userRes.json();
         const reposData = await reposRes.json();
 
-        setSiteConfig((prev) => ({
+        setBaseConfig((prev) => ({
           ...prev,
           englishName: userData.name || prev.englishName,
           avatarUrl: userData.avatar_url || prev.avatarUrl,
@@ -57,7 +98,7 @@ export default function App() {
         }));
 
         if (Array.isArray(reposData) && reposData.length > 0) {
-          setProjects((prevProjects) => {
+          setRawProjects((prevProjects) => {
             const existingBySlug = new Map<string, ProjectItem>(
               prevProjects.map((p) => [p.slug.toLowerCase(), { ...p }])
             );
@@ -84,7 +125,7 @@ export default function App() {
                   subtitle: r.description || 'GitHub Repository',
                   category: r.language === 'Kotlin' ? 'android' : 'devops',
                   categoryLabel:
-                    r.language === 'Kotlin' ? 'اپلیکیشن بومی اندروید' : 'مخزن گیت‌هاب',
+                    r.language === 'Kotlin' ? 'Native Android' : 'GitHub Repository',
                   year: new Date(r.updated_at || Date.now()).getFullYear().toString(),
                   language: r.language || 'Source',
                   stars: r.stargazers_count || 0,
@@ -96,12 +137,11 @@ export default function App() {
                   liveUrl: r.homepage || r.html_url,
                   featured: false,
                   bentoSpan: 'standard',
-                  summary:
-                    r.description || `مخزن متن‌باز ${r.name} در حساب گیت‌هاب ${username}.`,
-                  architectureNotes: 'فراخوانی شده به صورت مستقیم از GitHub REST API.',
+                  summary: r.description || `${r.name} repository on GitHub.`,
+                  architectureNotes: 'Synchronized directly via GitHub REST API.',
                   highlights: [
-                    `زبان اصلی: ${r.language || 'چندگانه'}`,
-                    `حجم مخزن: ${r.size || 0} کیلوبایت`,
+                    `Primary Language: ${r.language || 'Multi-language'}`,
+                    `Repository Size: ${r.size || 0} KB`,
                   ],
                   codeSnippet: `git clone ${r.clone_url}`,
                   visualType: 'edge-kv',
@@ -125,7 +165,7 @@ export default function App() {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
-        setActiveProjectModal(null);
+        setActiveProjectSlug(null);
         setIsJekyllDrawerOpen(false);
       }
     };
@@ -133,18 +173,36 @@ export default function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
+  const siteConfig = useMemo(
+    () => getLocalizedSiteConfig(baseConfig, locale),
+    [baseConfig, locale]
+  );
+
+  const localizedProjects = useMemo(
+    () => rawProjects.map((p) => getLocalizedProject(p, locale)),
+    [rawProjects, locale]
+  );
+
+  const activeProjectModal = useMemo(
+    () =>
+      activeProjectSlug
+        ? localizedProjects.find((p) => p.slug === activeProjectSlug) || null
+        : null,
+    [activeProjectSlug, localizedProjects]
+  );
+
   const handleManualSync = async () => {
     setIsSyncingGithub(true);
     setSyncNotice(null);
     try {
       const res = await fetch(
-        `https://api.github.com/users/${siteConfig.githubUsername}/repos?per_page=100&sort=updated`
+        `https://api.github.com/users/${baseConfig.githubUsername}/repos?per_page=100&sort=updated`
       );
       if (res.ok) {
-        setSyncNotice('لیست مخازن با آخرین وضعیت گیت‌هاب شما همگام‌سازی شد.');
+        setSyncNotice(t.syncSuccessMsg);
       }
     } catch {
-      setSyncNotice('اطلاعات مخازن گیت‌هاب شما بروز است.');
+      setSyncNotice(t.syncSuccessMsg);
     } finally {
       setIsSyncingGithub(false);
       setTimeout(() => setSyncNotice(null), 3500);
@@ -152,7 +210,7 @@ export default function App() {
   };
 
   const filteredProjects = useMemo(() => {
-    return projects.filter((proj) => {
+    return localizedProjects.filter((proj) => {
       const matchesCat = selectedCategory === 'all' || proj.category === selectedCategory;
       const q = searchQuery.trim().toLowerCase();
       const matchesSearch =
@@ -164,11 +222,11 @@ export default function App() {
         proj.summary.toLowerCase().includes(q);
       return matchesCat && matchesSearch;
     });
-  }, [projects, selectedCategory, searchQuery]);
+  }, [localizedProjects, selectedCategory, searchQuery]);
 
   const jekyllFiles = useMemo(() => {
-    return generateJekyllFiles(siteConfig, projects);
-  }, [siteConfig, projects]);
+    return generateJekyllFiles(siteConfig, localizedProjects);
+  }, [siteConfig, localizedProjects]);
 
   const handleCopyText = (text: string, key: string) => {
     navigator.clipboard.writeText(text);
@@ -188,10 +246,12 @@ export default function App() {
     URL.revokeObjectURL(url);
   };
 
-  const isLightPaper = siteConfig.themeStyle === 'editorial-paper';
+  const isLightPaper = baseConfig.themeStyle === 'editorial-paper';
+  const isRtl = localeMeta.dir === 'rtl';
 
   return (
     <div
+      dir={localeMeta.dir}
       className={`min-h-screen transition-colors duration-150 ${
         isLightPaper
           ? 'bg-[#F8F7F4] text-zinc-900'
@@ -221,13 +281,13 @@ export default function App() {
               href="#projects"
               className="hover:underline underline-offset-8 transition-colors whitespace-nowrap shrink-0"
             >
-              پروژه‌ها
+              {t.navProjects}
             </a>
             <a
               href="#skills"
               className="hover:underline underline-offset-8 transition-colors whitespace-nowrap shrink-0"
             >
-              تخصص‌ها
+              {t.navSkills}
             </a>
             <a
               href="https://chatapp-server-1i2a.onrender.com"
@@ -235,44 +295,89 @@ export default function App() {
               rel="noopener noreferrer"
               className="hover:underline underline-offset-8 transition-colors whitespace-nowrap shrink-0"
             >
-              دموی پیام‌رسان
+              {t.navLiveMessenger}
             </a>
             <a
               href="#contact"
               className="hover:underline underline-offset-8 transition-colors whitespace-nowrap shrink-0"
             >
-              ارتباط با من
+              {t.navContact}
             </a>
           </nav>
 
           {/* Zone 3: 1 primary action */}
           <div className="flex items-center shrink-0">
             <a
-              href={`https://github.com/${siteConfig.githubUsername}`}
+              href={`https://github.com/${baseConfig.githubUsername}`}
               target="_blank"
               rel="noopener noreferrer"
               className="px-4 py-2 text-xs font-medium text-white bg-[#2563EB] rounded-lg hover:bg-blue-500 transition-colors whitespace-nowrap shrink-0 font-mono"
               dir="ltr"
             >
-              github.com/{siteConfig.githubUsername}
+              github.com/{baseConfig.githubUsername}
             </a>
           </div>
         </div>
       </header>
 
       <main id="top" className="max-w-[1240px] mx-auto px-6">
+        {/* Geo-IP Automatic Language Switcher Bar (8 Languages) */}
+        <div
+          className={`pt-6 pb-4 border-b flex flex-wrap items-center justify-between gap-4 ${
+            isLightPaper ? 'border-zinc-200' : 'border-zinc-800/70'
+          }`}
+        >
+          <div className="flex items-center gap-2 text-xs text-zinc-400">
+            <Globe className="w-3.5 h-3.5 text-[#2563EB] shrink-0" />
+            <span>
+              {t.geoDetectedLabel}
+              {detectedCountry ? ` (${detectedCountry})` : ''}
+            </span>
+          </div>
+
+          <div
+            className={`inline-flex flex-wrap items-center gap-1 p-1 rounded-lg border ${
+              isLightPaper
+                ? 'bg-zinc-200/70 border-zinc-300'
+                : 'bg-zinc-900/90 border-zinc-800'
+            }`}
+            dir="ltr"
+          >
+            {SUPPORTED_LOCALES.map((item) => {
+              const isActive = locale === item.code;
+              return (
+                <button
+                  key={item.code}
+                  type="button"
+                  onClick={() => setLocale(item.code)}
+                  title={item.nativeName}
+                  className={`px-2.5 py-1 text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0 ${
+                    isActive
+                      ? 'bg-[#2563EB] text-white'
+                      : isLightPaper
+                      ? 'text-zinc-700 hover:text-zinc-950'
+                      : 'text-zinc-400 hover:text-zinc-100'
+                  }`}
+                >
+                  {item.nativeName}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
         {/* Hero Split Section */}
-        <section className="py-12 lg:py-20">
+        <section className="py-10 lg:py-16">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-stretch">
-            {/* Right Column in RTL (Typographic Hierarchy & Real GitHub Identity) */}
+            {/* Primary Column: Typographic Hierarchy & Real GitHub Identity */}
             <div className="lg:col-span-7 flex flex-col justify-between py-2">
               <div>
                 {/* Developer Profile Header with Real GitHub Avatar */}
                 <div className="flex items-center gap-4 mb-6">
                   {!avatarError ? (
                     <img
-                      src={siteConfig.avatarUrl}
-                      alt={siteConfig.englishName}
+                      src={baseConfig.avatarUrl}
+                      alt={baseConfig.englishName}
                       referrerPolicy="no-referrer"
                       onError={() => setAvatarError(true)}
                       className="w-16 h-16 rounded-2xl object-cover border border-zinc-700 shrink-0"
@@ -284,7 +389,7 @@ export default function App() {
                   )}
                   <div>
                     <div className="text-base font-bold font-mono" dir="ltr">
-                      {siteConfig.englishName}
+                      {baseConfig.englishName}
                     </div>
                     <div
                       className={`flex flex-wrap items-center gap-2 text-xs mt-1 ${
@@ -292,36 +397,27 @@ export default function App() {
                       }`}
                     >
                       <span className="font-mono text-[#2563EB]" dir="ltr">
-                        @{siteConfig.githubUsername}
+                        @{baseConfig.githubUsername}
                       </span>
                       <span aria-hidden="true">·</span>
-                      <span>Mobile Developer &amp; Linux User</span>
+                      <span>{siteConfig.roleTitle}</span>
                     </div>
                   </div>
                 </div>
 
                 <h1
-                  className="text-3xl sm:text-4xl lg:text-[2.65rem] font-bold tracking-tight leading-[1.24] mb-5 max-w-2xl"
+                  className="text-3xl sm:text-4xl lg:text-[2.6rem] font-bold tracking-tight leading-[1.25] mb-5 max-w-2xl"
                   style={{ textWrap: 'balance' }}
                 >
                   {siteConfig.bioHeadline}
                 </h1>
 
                 <p
-                  className={`text-base leading-relaxed max-w-[65ch] mb-4 ${
+                  className={`text-base leading-relaxed max-w-[65ch] mb-8 ${
                     isLightPaper ? 'text-zinc-700' : 'text-zinc-300'
                   }`}
                 >
                   {siteConfig.bioLead}
-                </p>
-
-                <p
-                  dir="ltr"
-                  className={`text-xs font-mono mb-8 ${
-                    isLightPaper ? 'text-zinc-500' : 'text-zinc-400'
-                  }`}
-                >
-                  "{siteConfig.englishBio}"
                 </p>
               </div>
 
@@ -330,7 +426,7 @@ export default function App() {
                   href="#projects"
                   className="px-5 py-2.5 text-sm font-medium text-white bg-[#2563EB] rounded-lg hover:bg-blue-500 transition-colors whitespace-nowrap shrink-0"
                 >
-                  مشاهده پروژه‌ها
+                  {t.ctaViewProjects}
                 </a>
                 <a
                   href="https://chatapp-server-1i2a.onrender.com"
@@ -342,13 +438,13 @@ export default function App() {
                       : 'border-zinc-800 text-zinc-200 hover:bg-zinc-900'
                   }`}
                 >
-                  <span>اجرای زنده chat-app v6.0</span>
+                  <span>{t.ctaLiveChatApp}</span>
                   <ExternalLink className="w-3.5 h-3.5" />
                 </a>
                 <button
                   type="button"
                   onClick={() =>
-                    setSiteConfig((prev) => ({
+                    setBaseConfig((prev) => ({
                       ...prev,
                       themeStyle:
                         prev.themeStyle === 'monograph-dark'
@@ -365,12 +461,12 @@ export default function App() {
                   {isLightPaper ? (
                     <>
                       <Moon className="w-3.5 h-3.5" />
-                      <span>تم تاریک</span>
+                      <span>{t.ctaThemeDark}</span>
                     </>
                   ) : (
                     <>
                       <Sun className="w-3.5 h-3.5" />
-                      <span>تم روشن</span>
+                      <span>{t.ctaThemeLight}</span>
                     </>
                   )}
                 </button>
@@ -384,7 +480,7 @@ export default function App() {
                   }`}
                 >
                   <Code2 className="w-3.5 h-3.5" />
-                  <span>سورس Jekyll</span>
+                  <span>{t.ctaJekyllSource}</span>
                 </button>
               </div>
 
@@ -395,7 +491,7 @@ export default function App() {
               )}
             </div>
 
-            {/* Left Column in RTL (Visual Showcase Container at matching height) */}
+            {/* Secondary Column: Visual Showcase Container at matching height */}
             <div className="lg:col-span-5 flex">
               <ProjectArtwork type="hero" className="w-full" />
             </div>
@@ -409,14 +505,14 @@ export default function App() {
           >
             <div>
               <div className="text-2xl lg:text-3xl font-bold font-mono tabular-nums">
-                9 مخزن عمومی
+                {t.kpiReposValue}
               </div>
               <div
                 className={`text-xs mt-1 ${
                   isLightPaper ? 'text-zinc-600' : 'text-zinc-400'
                 }`}
               >
-                پروژه‌های متن‌باز در حساب <code className="font-mono">github.com/indirect-b</code>
+                {t.kpiReposDesc}
               </div>
             </div>
             <div>
@@ -428,7 +524,7 @@ export default function App() {
                   isLightPaper ? 'text-zinc-600' : 'text-zinc-400'
                 }`}
               >
-                توسعه اپلیکیشن‌های بومی اندروید با معماری Clean + MVVM و Room DB
+                {t.kpiAndroidDesc}
               </div>
             </div>
             <div>
@@ -440,7 +536,7 @@ export default function App() {
                   isLightPaper ? 'text-zinc-600' : 'text-zinc-400'
                 }`}
               >
-                موتور رمزنگاری ترکیبی پسا-کوانتومی (FIPS 203) و VOPRF در وب
+                {t.kpiCryptoDesc}
               </div>
             </div>
             <div>
@@ -452,7 +548,7 @@ export default function App() {
                   isLightPaper ? 'text-zinc-600' : 'text-zinc-400'
                 }`}
               >
-                ایجنت‌های هوشمند کدنویسی و اتوماسیون بیلد ابری در محیط لینوکس
+                {t.kpiAiDesc}
               </div>
             </div>
           </div>
@@ -483,27 +579,33 @@ export default function App() {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
           <div>
             <h2 className="text-2xl lg:text-3xl font-bold tracking-tight mb-2">
-              01. گزیده پروژه‌ها و مخازن مهندسی نرم‌افزار
+              {t.section1Title}
             </h2>
             <p
               className={`text-sm ${
                 isLightPaper ? 'text-zinc-600' : 'text-zinc-400'
               }`}
             >
-              برای مشاهده معماری سیستم، ویژگی‌های فنی و تکه کدهای هر پروژه روی کارت آن کلیک کنید.
+              {t.section1Desc}
             </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
             {/* Search Input */}
             <div className="relative">
-              <Search className="w-4 h-4 text-zinc-500 absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <Search
+                className={`w-4 h-4 text-zinc-500 absolute top-1/2 -translate-y-1/2 pointer-events-none ${
+                  isRtl ? 'right-3' : 'left-3'
+                }`}
+              />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="جستجو در پروژه‌ها (مثلاً Kotlin)..."
-                className={`pr-9 pl-3 py-1.5 text-xs rounded-lg border focus:outline-none focus:border-[#2563EB] ${
+                placeholder={t.searchPlaceholder}
+                className={`${
+                  isRtl ? 'pr-9 pl-3' : 'pl-9 pr-3'
+                } py-1.5 text-xs rounded-lg border focus:outline-none focus:border-[#2563EB] ${
                   isLightPaper
                     ? 'bg-white border-zinc-300 text-zinc-900'
                     : 'bg-zinc-900/90 border-zinc-800 text-zinc-100'
@@ -524,7 +626,7 @@ export default function App() {
               <RefreshCw
                 className={`w-3.5 h-3.5 ${isSyncingGithub ? 'animate-spin' : ''}`}
               />
-              <span>بروزرسانی از GitHub</span>
+              <span>{t.syncGithubBtn}</span>
             </button>
           </div>
         </div>
@@ -539,11 +641,11 @@ export default function App() {
             }`}
           >
             {[
-              { id: 'all', label: 'همه پروژه‌ها' },
-              { id: 'android', label: 'اپلیکیشن بومی اندروید' },
-              { id: 'security-web', label: 'امنیت و فول‌استک وب' },
-              { id: 'ai-tools', label: 'هوش مصنوعی و موبایل' },
-              { id: 'devops', label: 'اتوماسیون و CI/CD' },
+              { id: 'all', label: t.filterAll },
+              { id: 'android', label: t.filterAndroid },
+              { id: 'security-web', label: t.filterSecurityWeb },
+              { id: 'ai-tools', label: t.filterAiTools },
+              { id: 'devops', label: t.filterDevops },
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -563,7 +665,7 @@ export default function App() {
           </div>
 
           <div className="text-xs text-zinc-500 font-mono">
-            نمایش {filteredProjects.length} از {projects.length} مخزن
+            {t.showingCount(filteredProjects.length, localizedProjects.length)}
           </div>
         </div>
 
@@ -576,9 +678,7 @@ export default function App() {
                 : 'bg-zinc-900/40 border-zinc-800'
             }`}
           >
-            <p className="text-sm text-zinc-400 mb-4">
-              هیچ پروژه‌ای با عبارت جستجو شده یافت نشد.
-            </p>
+            <p className="text-sm text-zinc-400 mb-4">{t.noProjectsFound}</p>
             <button
               type="button"
               onClick={() => {
@@ -587,7 +687,7 @@ export default function App() {
               }}
               className="px-4 py-2 text-xs font-medium text-white bg-[#2563EB] rounded-lg"
             >
-              بازنشانی فیلترها
+              {t.resetFilters}
             </button>
           </div>
         ) : (
@@ -597,7 +697,7 @@ export default function App() {
               return (
                 <article
                   key={project.id}
-                  onClick={() => setActiveProjectModal(project)}
+                  onClick={() => setActiveProjectSlug(project.slug)}
                   className={`group cursor-pointer rounded-2xl border overflow-hidden flex flex-col justify-between transition-transform duration-150 hover:-translate-y-0.5 ${
                     isWide ? 'lg:col-span-2' : 'lg:col-span-1'
                   } ${
@@ -668,8 +768,12 @@ export default function App() {
                       indirect-b/{project.slug}
                     </span>
                     <span className="inline-flex items-center gap-1 font-medium text-[#2563EB]">
-                      <span>بررسی معماری و کد</span>
-                      <ArrowUpLeft className="w-3.5 h-3.5" />
+                      <span>{t.cardInspectBtn}</span>
+                      {isRtl ? (
+                        <ArrowUpLeft className="w-3.5 h-3.5" />
+                      ) : (
+                        <ArrowUpRight className="w-3.5 h-3.5" />
+                      )}
                     </span>
                   </div>
                 </article>
@@ -689,14 +793,14 @@ export default function App() {
         <div className="max-w-[1240px] mx-auto px-6">
           <div className="mb-10">
             <h2 className="text-2xl lg:text-3xl font-bold tracking-tight mb-2">
-              02. حوزه‌های تخصصی و پشته فنی (Tech Stack)
+              {t.section2Title}
             </h2>
             <p
               className={`text-sm ${
                 isLightPaper ? 'text-zinc-600' : 'text-zinc-400'
               }`}
             >
-              معماری‌ها، زبان‌ها و ابزارهای مهندسی مورد استفاده در پروژه‌های من
+              {t.section2Desc}
             </p>
           </div>
 
@@ -711,15 +815,13 @@ export default function App() {
               <div className="text-xs font-mono text-[#2563EB] mb-2" dir="ltr">
                 01. NATIVE ANDROID ENGINEERING
               </div>
-              <h3 className="text-lg font-bold mb-2">
-                توسعه اپلیکیشن‌های بومی اندروید
-              </h3>
+              <h3 className="text-lg font-bold mb-2">{t.skill1Title}</h3>
               <p
                 className={`text-sm leading-relaxed mb-4 ${
                   isLightPaper ? 'text-zinc-600' : 'text-zinc-400'
                 }`}
               >
-                طراحی رابط کاربری مدرن با Jetpack Compose (Material 3)، معماری Clean + MVVM، پایگاه داده محلی Room، بهینه‌سازی مصرف حافظه و مهندسی معکوس بسته‌های Smali / APK.
+                {t.skill1Desc}
               </p>
               <div className="text-xs font-mono text-zinc-400" dir="ltr">
                 Kotlin 1.9+ · Jetpack Compose · Room DB · Gradle · Smali
@@ -736,15 +838,13 @@ export default function App() {
               <div className="text-xs font-mono text-[#2563EB] mb-2" dir="ltr">
                 02. FULL-STACK &amp; POST-QUANTUM SECURITY
               </div>
-              <h3 className="text-lg font-bold mb-2">
-                سیستم‌های بلادرنگ و رمزنگاری پیشرفته
-              </h3>
+              <h3 className="text-lg font-bold mb-2">{t.skill2Title}</h3>
               <p
                 className={`text-sm leading-relaxed mb-4 ${
                   isLightPaper ? 'text-zinc-600' : 'text-zinc-400'
                 }`}
               >
-                پیاده‌سازی پیام‌رسان‌های بلادرنگ با Socket.IO و Express، تبادل کلید پسا-کوانتومی (ML-KEM-768 + ECDH P-256) و احراز هویت ناشناس مبتنی بر VOPRF.
+                {t.skill2Desc}
               </p>
               <div className="text-xs font-mono text-zinc-400" dir="ltr">
                 TypeScript · React 19 · Node.js · PostgreSQL · WebCrypto
@@ -761,15 +861,13 @@ export default function App() {
               <div className="text-xs font-mono text-[#2563EB] mb-2" dir="ltr">
                 03. AI AUTOMATION &amp; LINUX CI/CD
               </div>
-              <h3 className="text-lg font-bold mb-2">
-                اتوماسیون هوش مصنوعی و محیط لینوکس
-              </h3>
+              <h3 className="text-lg font-bold mb-2">{t.skill3Title}</h3>
               <p
                 className={`text-sm leading-relaxed mb-4 ${
                   isLightPaper ? 'text-zinc-600' : 'text-zinc-400'
                 }`}
               >
-                یکپارچه‌سازی Google Gemini API با قابلیت Grounded Web Search، پردازش اسناد OpenXML و اتوماسیون کامپایل ابری اندروید با GitHub Actions.
+                {t.skill3Desc}
               </p>
               <div className="text-xs font-mono text-zinc-400" dir="ltr">
                 Gemini API · Linux Shell · GitHub Actions · Jekyll Static
@@ -779,7 +877,7 @@ export default function App() {
         </div>
       </section>
 
-      {/* Collapsible Jekyll Source Studio (Accessible via "سورس Jekyll" button) */}
+      {/* Collapsible Jekyll Source Studio */}
       {isJekyllDrawerOpen && (
         <section
           id="jekyll-studio"
@@ -793,18 +891,16 @@ export default function App() {
             <div className="flex items-center justify-between gap-6 mb-8">
               <div>
                 <h2 className="text-xl lg:text-2xl font-bold tracking-tight mb-1">
-                  فایل‌های قالب Jekyll و پیکربندی GitHub Pages
+                  {t.jekyllDrawerTitle}
                 </h2>
-                <p className="text-xs text-zinc-400">
-                  کدهای Liquid و YAML معادل این پورتفولیو برای استفاده در پروژه‌های Jekyll خالص
-                </p>
+                <p className="text-xs text-zinc-400">{t.jekyllDrawerDesc}</p>
               </div>
               <button
                 type="button"
                 onClick={() => setIsJekyllDrawerOpen(false)}
                 className="px-3 py-1.5 text-xs rounded-lg border border-zinc-700 text-zinc-300 hover:bg-zinc-800"
               >
-                بستن پنل کدها ✕
+                {t.closeBtn}
               </button>
             </div>
 
@@ -817,9 +913,12 @@ export default function App() {
                 }`}
               >
                 <div className="flex items-center justify-between pb-3 mb-3 border-b border-zinc-800/60">
-                  <div className="flex items-center gap-2 text-xs font-mono text-zinc-400" dir="ltr">
+                  <div
+                    className="flex items-center gap-2 text-xs font-mono text-zinc-400"
+                    dir="ltr"
+                  >
                     <FolderGit2 className="w-4 h-4 text-[#2563EB]" />
-                    <span>{siteConfig.githubUsername}.github.io/</span>
+                    <span>{baseConfig.githubUsername}.github.io/</span>
                   </div>
                 </div>
                 <div className="space-y-1" dir="ltr">
@@ -861,12 +960,12 @@ export default function App() {
                       {copiedKey === activeJekyllFile ? (
                         <>
                           <Check className="w-3.5 h-3.5 text-emerald-400" />
-                          <span>کپی شد</span>
+                          <span>{t.copiedBtn}</span>
                         </>
                       ) : (
                         <>
                           <Copy className="w-3.5 h-3.5" />
-                          <span>کپی</span>
+                          <span>{t.copyBtn}</span>
                         </>
                       )}
                     </button>
@@ -881,7 +980,7 @@ export default function App() {
                       className="px-3 py-1.5 text-xs font-medium rounded-md bg-zinc-900 text-zinc-200 hover:bg-zinc-800 border border-zinc-800 flex items-center gap-1.5"
                     >
                       <Download className="w-3.5 h-3.5" />
-                      <span>دانلود</span>
+                      <span>{t.downloadBtn}</span>
                     </button>
                   </div>
                 </div>
@@ -907,25 +1006,25 @@ export default function App() {
         <div className="max-w-[1240px] mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           <div className="lg:col-span-8">
             <h2 className="text-2xl font-bold tracking-tight mb-3">
-              همکاری در پروژه‌های اندروید، سیستم‌های امن وب و هوش مصنوعی
+              {t.contactTitle}
             </h2>
             <p
               className={`text-sm leading-relaxed max-w-2xl ${
                 isLightPaper ? 'text-zinc-600' : 'text-zinc-400'
               }`}
             >
-              برای مشاهده سورس کامل پروژه‌ها، بررسی مستندات فنی یا ارتباط مستقیم می‌توانید به صفحه گیت‌هاب من مراجعه کنید.
+              {t.contactDesc}
             </p>
           </div>
           <div className="lg:col-span-4 flex flex-wrap lg:justify-end gap-3">
             <a
-              href={`https://github.com/${siteConfig.githubUsername}`}
+              href={`https://github.com/${baseConfig.githubUsername}`}
               target="_blank"
               rel="noopener noreferrer"
               className="px-5 py-2.5 text-xs font-medium text-white bg-[#2563EB] rounded-lg hover:bg-blue-500 transition-colors inline-flex items-center gap-2 font-mono whitespace-nowrap shrink-0"
               dir="ltr"
             >
-              <span>github.com/{siteConfig.githubUsername}</span>
+              <span>github.com/{baseConfig.githubUsername}</span>
               <ExternalLink className="w-3.5 h-3.5" />
             </a>
             <a
@@ -938,7 +1037,7 @@ export default function App() {
                   : 'border-zinc-800 text-zinc-200 hover:bg-zinc-900'
               }`}
             >
-              <span>دموی پیام‌رسان chat-app</span>
+              <span>{t.ctaLiveChatApp}</span>
               <ExternalLink className="w-3.5 h-3.5" />
             </a>
           </div>
@@ -954,18 +1053,16 @@ export default function App() {
         }`}
       >
         <div className="max-w-[1240px] mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div>
-            © ۲۰۲۶ {siteConfig.fullName} ({siteConfig.englishName}). میزبانی شده روی GitHub Pages.
-          </div>
+          <div>{t.footerCopyright}</div>
           <div className="flex items-center gap-4">
             <a
-              href={`https://github.com/${siteConfig.githubUsername}`}
+              href={`https://github.com/${baseConfig.githubUsername}`}
               target="_blank"
               rel="noopener noreferrer"
               className="hover:underline font-mono"
               dir="ltr"
             >
-              github.com/{siteConfig.githubUsername}
+              github.com/{baseConfig.githubUsername}
             </a>
             <span>·</span>
             <a
@@ -982,7 +1079,7 @@ export default function App() {
               onClick={() => setIsJekyllDrawerOpen((prev) => !prev)}
               className="hover:underline"
             >
-              فایل‌های Jekyll
+              {t.ctaJekyllSource}
             </button>
           </div>
         </div>
@@ -992,7 +1089,7 @@ export default function App() {
       {activeProjectModal && (
         <div
           className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6 overflow-y-auto"
-          onClick={() => setActiveProjectModal(null)}
+          onClick={() => setActiveProjectSlug(null)}
         >
           <div
             className="bg-[#0B0B0E] border border-zinc-800 text-zinc-100 rounded-2xl max-w-4xl w-full overflow-hidden my-auto shadow-2xl"
@@ -1012,9 +1109,9 @@ export default function App() {
               </div>
               <button
                 type="button"
-                onClick={() => setActiveProjectModal(null)}
+                onClick={() => setActiveProjectSlug(null)}
                 className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
-                aria-label="بستن پنجره"
+                aria-label={t.closeBtn}
               >
                 <X className="w-5 h-5" />
               </button>
@@ -1038,13 +1135,13 @@ export default function App() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <h3 className="text-sm font-semibold text-zinc-200 mb-2">
-                    معرفی و هدف پروژه
+                    {t.modalOverviewTitle}
                   </h3>
                   <p className="text-sm text-zinc-300 leading-relaxed mb-4">
                     {activeProjectModal.summary}
                   </p>
                   <h3 className="text-sm font-semibold text-zinc-200 mb-2">
-                    معماری و جزئیات فنی
+                    {t.modalArchTitle}
                   </h3>
                   <p className="text-sm text-zinc-300 leading-relaxed">
                     {activeProjectModal.architectureNotes}
@@ -1053,7 +1150,7 @@ export default function App() {
 
                 <div>
                   <h3 className="text-sm font-semibold text-zinc-200 mb-2">
-                    ویژگی‌های شاخص در مخزن گیت‌هاب
+                    {t.modalHighlightsTitle}
                   </h3>
                   <ul className="space-y-2 text-sm text-zinc-300 mb-6">
                     {activeProjectModal.highlights.map((item, idx) => (
@@ -1071,7 +1168,7 @@ export default function App() {
                       rel="noopener noreferrer"
                       className="px-4 py-2 text-xs font-medium text-white bg-[#2563EB] rounded-lg hover:bg-blue-500 transition-colors inline-flex items-center gap-1.5"
                     >
-                      <span>مشاهده مخزن در GitHub</span>
+                      <span>{t.modalViewGithub}</span>
                       <ExternalLink className="w-3.5 h-3.5" />
                     </a>
                     {activeProjectModal.liveUrl &&
@@ -1082,7 +1179,7 @@ export default function App() {
                           rel="noopener noreferrer"
                           className="px-4 py-2 text-xs font-medium text-emerald-300 bg-emerald-950/50 border border-emerald-800/70 rounded-lg hover:bg-emerald-900/50 transition-colors inline-flex items-center gap-1.5"
                         >
-                          <span>مشاهده دموی زنده</span>
+                          <span>{t.modalViewLive}</span>
                           <ExternalLink className="w-3.5 h-3.5" />
                         </a>
                       )}
