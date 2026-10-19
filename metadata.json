@@ -1,0 +1,6 @@
+{
+  "name": "Jekyll & GitHub Pages Portfolio Studio",
+  "description": "وب‌سایت شخصی توسعه‌دهنده و مولد قالب کامل Jekyll برای استقرار در GitHub Pages (github.io) همراه با نمایش تعاملی پروژه‌های برنامه‌نویسی.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
