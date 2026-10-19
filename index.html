@@ -12,10 +12,25 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Outfit:wght@400;600;700&family=Vazirmatn:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/public/dist-bundle/app.css" />
   </head>
   <body class="bg-[#050505] text-zinc-100 antialiased selection:bg-[#2563EB] selection:text-white">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      // Automatic fallback when GitHub Pages serves raw branch files without Vite compilation
+      window.addEventListener('DOMContentLoaded', function () {
+        setTimeout(function () {
+          var root = document.getElementById('root');
+          if (root && root.children.length === 0) {
+            var s = document.createElement('script');
+            s.type = 'module';
+            s.src = '/public/dist-bundle/app.js';
+            document.body.appendChild(s);
+          }
+        }, 250);
+      });
+    </script>
   </body>
 </html>
 
