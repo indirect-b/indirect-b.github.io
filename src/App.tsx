@@ -17,6 +17,14 @@ import {
 } from './data/i18n';
 import { ProjectArtwork } from './components/ProjectArtwork';
 import {
+  BackgroundFX,
+  CursorGlow,
+  Reveal,
+  Tilt,
+  Typewriter,
+  CountUp,
+} from './components/Effects';
+import {
   ExternalLink,
   Copy,
   Check,
@@ -258,12 +266,14 @@ export default function App() {
           : 'bg-[#050505] text-zinc-100'
       }`}
     >
+      <BackgroundFX dim={isLightPaper} />
+      <CursorGlow />
       {/* Top Bar Contract: Strictly 1 row, 3 zones separated by gap-8 */}
       <header
         className={`sticky top-0 z-30 backdrop-blur-md border-b transition-colors ${
           isLightPaper
             ? 'bg-[#F8F7F4]/90 border-zinc-200'
-            : 'bg-[#050505]/90 border-zinc-800/80'
+            : 'bg-[#050505]/90 border-cyan-500/30'
         }`}
       >
         <div className="max-w-[1240px] mx-auto flex items-center justify-between gap-8 px-6 py-4">
@@ -311,7 +321,7 @@ export default function App() {
               href={`https://github.com/${baseConfig.githubUsername}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="px-4 py-2 text-xs font-medium text-white bg-[#2563EB] rounded-lg hover:bg-blue-500 transition-colors whitespace-nowrap shrink-0 font-mono"
+              className="px-4 py-2 text-xs font-medium text-black bg-[#00e5ff] cp-cut rounded-lg hover:bg-cyan-300 transition-colors whitespace-nowrap shrink-0 font-mono"
               dir="ltr"
             >
               github.com/{baseConfig.githubUsername}
@@ -328,7 +338,7 @@ export default function App() {
           }`}
         >
           <div className="flex items-center gap-2 text-xs text-zinc-400">
-            <Globe className="w-3.5 h-3.5 text-[#2563EB] shrink-0" />
+            <Globe className="w-3.5 h-3.5 text-[#00e5ff] shrink-0" />
             <span>
               {t.geoDetectedLabel}
               {detectedCountry ? ` (${detectedCountry})` : ''}
@@ -353,7 +363,7 @@ export default function App() {
                   title={item.nativeName}
                   className={`px-2.5 py-1 text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0 ${
                     isActive
-                      ? 'bg-[#2563EB] text-white'
+                      ? 'bg-[#00e5ff] text-black'
                       : isLightPaper
                       ? 'text-zinc-700 hover:text-zinc-950'
                       : 'text-zinc-400 hover:text-zinc-100'
@@ -383,7 +393,7 @@ export default function App() {
                       className="w-16 h-16 rounded-2xl object-cover border border-zinc-700 shrink-0"
                     />
                   ) : (
-                    <div className="w-16 h-16 rounded-2xl bg-zinc-900 border border-zinc-700 flex items-center justify-center font-mono font-bold text-lg text-[#2563EB] shrink-0">
+                    <div className="w-16 h-16 rounded-2xl bg-zinc-900 border border-zinc-700 flex items-center justify-center font-mono font-bold text-lg text-[#00e5ff] shrink-0">
                       MT
                     </div>
                   )}
@@ -396,7 +406,7 @@ export default function App() {
                         isLightPaper ? 'text-zinc-600' : 'text-zinc-400'
                       }`}
                     >
-                      <span className="font-mono text-[#2563EB]" dir="ltr">
+                      <span className="font-mono text-[#00e5ff]" dir="ltr">
                         @{baseConfig.githubUsername}
                       </span>
                       <span aria-hidden="true">·</span>
@@ -406,8 +416,11 @@ export default function App() {
                 </div>
 
                 <h1
-                  className="text-3xl sm:text-4xl lg:text-[2.6rem] font-bold tracking-tight leading-[1.25] mb-5 max-w-2xl"
+                  className={`text-3xl sm:text-4xl lg:text-[2.6rem] font-bold tracking-tight leading-[1.25] mb-5 max-w-2xl ${
+                  isLightPaper ? '' : 'fx-gradient-text cp-glitch'
+                }`}
                   style={{ textWrap: 'balance' }}
+                  data-text={siteConfig.bioHeadline}
                 >
                   {siteConfig.bioHeadline}
                 </h1>
@@ -421,10 +434,14 @@ export default function App() {
                 </p>
               </div>
 
+              <div dir="ltr" className="font-mono text-sm mb-2 flex items-center gap-2">
+                <span className="text-[#00e5ff]">▸</span>
+                <Typewriter words={['Android', 'Kotlin', 'Post-Quantum', 'AI Automation', 'Linux']} />
+              </div>
               <div className="flex flex-wrap items-center gap-3 pt-2">
                 <a
                   href="#projects"
-                  className="px-5 py-2.5 text-sm font-medium text-white bg-[#2563EB] rounded-lg hover:bg-blue-500 transition-colors whitespace-nowrap shrink-0"
+                  className="px-5 py-2.5 text-sm font-medium text-black bg-[#00e5ff] cp-cut rounded-lg hover:bg-cyan-300 transition-colors whitespace-nowrap shrink-0 btn-glow"
                 >
                   {t.ctaViewProjects}
                 </a>
@@ -505,7 +522,7 @@ export default function App() {
           >
             <div>
               <div className="text-2xl lg:text-3xl font-bold font-mono tabular-nums">
-                {t.kpiReposValue}
+                <CountUp value={t.kpiReposValue} />
               </div>
               <div
                 className={`text-xs mt-1 ${
@@ -576,8 +593,10 @@ export default function App() {
 
       {/* Section 01: Bento Grid of Real GitHub Projects */}
       <section id="projects" className="max-w-[1240px] mx-auto px-6 py-16 lg:py-24">
+        <Reveal>
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
           <div>
+            <div dir="ltr" className="font-mono text-xs tracking-[0.3em] text-[#ff2a6d] mb-2">// PROJECTS</div>
             <h2 className="text-2xl lg:text-3xl font-bold tracking-tight mb-2">
               {t.section1Title}
             </h2>
@@ -605,7 +624,7 @@ export default function App() {
                 placeholder={t.searchPlaceholder}
                 className={`${
                   isRtl ? 'pr-9 pl-3' : 'pl-9 pr-3'
-                } py-1.5 text-xs rounded-lg border focus:outline-none focus:border-[#2563EB] ${
+                } py-1.5 text-xs rounded-lg border focus:outline-none focus:border-[#00e5ff] ${
                   isLightPaper
                     ? 'bg-white border-zinc-300 text-zinc-900'
                     : 'bg-zinc-900/90 border-zinc-800 text-zinc-100'
@@ -630,6 +649,7 @@ export default function App() {
             </button>
           </div>
         </div>
+        </Reveal>
 
         {/* Interactive Filter Segmented Control */}
         <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
@@ -653,7 +673,7 @@ export default function App() {
                 onClick={() => setSelectedCategory(tab.id)}
                 className={`px-3.5 py-1.5 text-xs font-medium rounded-md transition-colors whitespace-nowrap shrink-0 ${
                   selectedCategory === tab.id
-                    ? 'bg-[#2563EB] text-white'
+                    ? 'bg-[#00e5ff] text-black'
                     : isLightPaper
                     ? 'text-zinc-700 hover:text-zinc-950'
                     : 'text-zinc-400 hover:text-zinc-100'
@@ -685,7 +705,7 @@ export default function App() {
                 setSelectedCategory('all');
                 setSearchQuery('');
               }}
-              className="px-4 py-2 text-xs font-medium text-white bg-[#2563EB] rounded-lg"
+              className="px-4 py-2 text-xs font-medium text-black bg-[#00e5ff] cp-cut rounded-lg"
             >
               {t.resetFilters}
             </button>
@@ -695,15 +715,16 @@ export default function App() {
             {filteredProjects.map((project) => {
               const isWide = project.bentoSpan === 'large';
               return (
-                <article
+                <Tilt
                   key={project.id}
+                  className={isWide ? 'lg:col-span-2' : 'lg:col-span-1'}
+                >
+                <article
                   onClick={() => setActiveProjectSlug(project.slug)}
-                  className={`group cursor-pointer rounded-2xl border overflow-hidden flex flex-col justify-between transition-transform duration-150 hover:-translate-y-0.5 ${
-                    isWide ? 'lg:col-span-2' : 'lg:col-span-1'
-                  } ${
+                  className={`group cursor-pointer rounded-2xl border overflow-hidden flex flex-col justify-between transition-transform duration-150 hover:-translate-y-0.5 h-full card-shine cp-cut ${
                     isLightPaper
                       ? 'bg-white border-zinc-200 hover:border-zinc-400'
-                      : 'bg-[#0B0B0E] border-zinc-800/90 hover:border-zinc-600'
+                      : 'bg-[#0B0B0E] border-zinc-800/90 hover:border-cyan-400/60'
                   }`}
                 >
                   <div>
@@ -721,7 +742,7 @@ export default function App() {
                       >
                         <span>{project.categoryLabel}</span>
                         <span aria-hidden="true">·</span>
-                        <span className="font-mono text-blue-400">
+                        <span className="font-mono text-cyan-300">
                           {project.language}
                         </span>
                         <span aria-hidden="true">·</span>
@@ -736,7 +757,7 @@ export default function App() {
                         </span>
                       </div>
 
-                      <h3 className="text-xl font-bold tracking-tight mb-1 group-hover:text-[#2563EB] transition-colors">
+                      <h3 className="text-xl font-bold tracking-tight mb-1 group-hover:text-[#00e5ff] transition-colors">
                         {project.title}
                       </h3>
 
@@ -767,7 +788,7 @@ export default function App() {
                     <span className="font-mono" dir="ltr">
                       indirect-b/{project.slug}
                     </span>
-                    <span className="inline-flex items-center gap-1 font-medium text-[#2563EB]">
+                    <span className="inline-flex items-center gap-1 font-medium text-[#00e5ff]">
                       <span>{t.cardInspectBtn}</span>
                       {isRtl ? (
                         <ArrowUpLeft className="w-3.5 h-3.5" />
@@ -777,6 +798,7 @@ export default function App() {
                     </span>
                   </div>
                 </article>
+                </Tilt>
               );
             })}
           </div>
@@ -791,7 +813,9 @@ export default function App() {
         }`}
       >
         <div className="max-w-[1240px] mx-auto px-6">
+          <Reveal>
           <div className="mb-10">
+            <div dir="ltr" className="font-mono text-xs tracking-[0.3em] text-[#ff2a6d] mb-2">// EXPERTISE</div>
             <h2 className="text-2xl lg:text-3xl font-bold tracking-tight mb-2">
               {t.section2Title}
             </h2>
@@ -803,16 +827,18 @@ export default function App() {
               {t.section2Desc}
             </p>
           </div>
+          </Reveal>
 
+          <Reveal>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div
-              className={`p-6 rounded-2xl border ${
+              className={`p-6 rounded-2xl border cp-cut ${
                 isLightPaper
                   ? 'bg-white border-zinc-200'
                   : 'bg-[#0B0B0E] border-zinc-800/90'
               }`}
             >
-              <div className="text-xs font-mono text-[#2563EB] mb-2" dir="ltr">
+              <div className="text-xs font-mono text-[#00e5ff] mb-2" dir="ltr">
                 01. NATIVE ANDROID ENGINEERING
               </div>
               <h3 className="text-lg font-bold mb-2">{t.skill1Title}</h3>
@@ -829,13 +855,13 @@ export default function App() {
             </div>
 
             <div
-              className={`p-6 rounded-2xl border ${
+              className={`p-6 rounded-2xl border cp-cut ${
                 isLightPaper
                   ? 'bg-white border-zinc-200'
                   : 'bg-[#0B0B0E] border-zinc-800/90'
               }`}
             >
-              <div className="text-xs font-mono text-[#2563EB] mb-2" dir="ltr">
+              <div className="text-xs font-mono text-[#00e5ff] mb-2" dir="ltr">
                 02. FULL-STACK &amp; POST-QUANTUM SECURITY
               </div>
               <h3 className="text-lg font-bold mb-2">{t.skill2Title}</h3>
@@ -852,13 +878,13 @@ export default function App() {
             </div>
 
             <div
-              className={`p-6 rounded-2xl border ${
+              className={`p-6 rounded-2xl border cp-cut ${
                 isLightPaper
                   ? 'bg-white border-zinc-200'
                   : 'bg-[#0B0B0E] border-zinc-800/90'
               }`}
             >
-              <div className="text-xs font-mono text-[#2563EB] mb-2" dir="ltr">
+              <div className="text-xs font-mono text-[#00e5ff] mb-2" dir="ltr">
                 03. AI AUTOMATION &amp; LINUX CI/CD
               </div>
               <h3 className="text-lg font-bold mb-2">{t.skill3Title}</h3>
@@ -874,6 +900,7 @@ export default function App() {
               </div>
             </div>
           </div>
+          </Reveal>
         </div>
       </section>
 
@@ -917,7 +944,7 @@ export default function App() {
                     className="flex items-center gap-2 text-xs font-mono text-zinc-400"
                     dir="ltr"
                   >
-                    <FolderGit2 className="w-4 h-4 text-[#2563EB]" />
+                    <FolderGit2 className="w-4 h-4 text-[#00e5ff]" />
                     <span>{baseConfig.githubUsername}.github.io/</span>
                   </div>
                 </div>
@@ -929,7 +956,7 @@ export default function App() {
                       onClick={() => setActiveJekyllFile(filePath)}
                       className={`w-full text-left px-3 py-2 rounded-lg font-mono text-xs transition-colors flex items-center justify-between ${
                         activeJekyllFile === filePath
-                          ? 'bg-[#2563EB] text-white font-semibold'
+                          ? 'bg-[#00e5ff] text-black font-semibold'
                           : isLightPaper
                           ? 'text-zinc-700 hover:bg-zinc-100'
                           : 'text-zinc-300 hover:bg-zinc-900'
@@ -1003,8 +1030,10 @@ export default function App() {
           isLightPaper ? 'border-zinc-200' : 'border-zinc-800/80'
         }`}
       >
-        <div className="max-w-[1240px] mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+        <Reveal>
+      <div className="max-w-[1240px] mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           <div className="lg:col-span-8">
+            <div dir="ltr" className="font-mono text-xs tracking-[0.3em] text-[#ff2a6d] mb-2">// CONTACT</div>
             <h2 className="text-2xl font-bold tracking-tight mb-3">
               {t.contactTitle}
             </h2>
@@ -1021,7 +1050,7 @@ export default function App() {
               href={`https://github.com/${baseConfig.githubUsername}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="px-5 py-2.5 text-xs font-medium text-white bg-[#2563EB] rounded-lg hover:bg-blue-500 transition-colors inline-flex items-center gap-2 font-mono whitespace-nowrap shrink-0"
+              className="px-5 py-2.5 text-xs font-medium text-black bg-[#00e5ff] cp-cut rounded-lg hover:bg-cyan-300 transition-colors inline-flex items-center gap-2 font-mono whitespace-nowrap shrink-0 btn-glow"
               dir="ltr"
             >
               <span>github.com/{baseConfig.githubUsername}</span>
@@ -1042,6 +1071,7 @@ export default function App() {
             </a>
           </div>
         </div>
+        </Reveal>
       </section>
 
       {/* Clean Quiet Footer */}
@@ -1092,14 +1122,14 @@ export default function App() {
           onClick={() => setActiveProjectSlug(null)}
         >
           <div
-            className="bg-[#0B0B0E] border border-zinc-800 text-zinc-100 rounded-2xl max-w-4xl w-full overflow-hidden my-auto shadow-2xl"
+            className="bg-[#0B0B0E] border border-cyan-500/40 text-zinc-100 rounded-2xl max-w-4xl w-full overflow-hidden my-auto shadow-2xl modal-in"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-800">
               <div className="flex items-center gap-2 text-xs text-zinc-400">
                 <span>{activeProjectModal.categoryLabel}</span>
                 <span>·</span>
-                <span className="font-mono text-blue-400">
+                <span className="font-mono text-cyan-300">
                   {activeProjectModal.language}
                 </span>
                 <span>·</span>
@@ -1155,7 +1185,7 @@ export default function App() {
                   <ul className="space-y-2 text-sm text-zinc-300 mb-6">
                     {activeProjectModal.highlights.map((item, idx) => (
                       <li key={idx} className="flex items-start gap-2">
-                        <span className="text-[#2563EB] font-mono">·</span>
+                        <span className="text-[#00e5ff] font-mono">·</span>
                         <span>{item}</span>
                       </li>
                     ))}
@@ -1166,7 +1196,7 @@ export default function App() {
                       href={activeProjectModal.repoUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="px-4 py-2 text-xs font-medium text-white bg-[#2563EB] rounded-lg hover:bg-blue-500 transition-colors inline-flex items-center gap-1.5"
+                      className="px-4 py-2 text-xs font-medium text-black bg-[#00e5ff] cp-cut rounded-lg hover:bg-cyan-300 transition-colors inline-flex items-center gap-1.5"
                     >
                       <span>{t.modalViewGithub}</span>
                       <ExternalLink className="w-3.5 h-3.5" />
