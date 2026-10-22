@@ -3,7 +3,7 @@
 @layer base {
   :root {
     --font-sans: 'Vazirmatn', system-ui, -apple-system, sans-serif;
-    --font-display: 'Bricolage Grotesque', 'Vazirmatn', sans-serif;
+    --font-display: 'Orbitron', 'Vazirmatn', sans-serif;
     --font-mono: 'JetBrains Mono', monospace;
   }
 
@@ -40,5 +40,219 @@
 @media (prefers-reduced-motion: reduce) {
   .animate-marquee {
     animation: none;
+  }
+}
+
+/* ---------- Effects layer (portfolio redesign) ---------- */
+
+.fx-grid {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+  background-size: 44px 44px;
+  -webkit-mask-image: radial-gradient(ellipse 90% 60% at 50% 0%, black 25%, transparent 78%);
+  mask-image: radial-gradient(ellipse 90% 60% at 50% 0%, black 25%, transparent 78%);
+}
+
+@keyframes fx-orb-float {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(44px, 32px, 0) scale(1.15);
+  }
+}
+
+.fx-orb {
+  animation: fx-orb-float 18s ease-in-out infinite alternate;
+}
+
+.fx-orb-delay {
+  animation-delay: -6s;
+}
+
+.fx-orb-delay2 {
+  animation-delay: -12s;
+}
+
+@keyframes fx-gradient-pan {
+  to {
+    background-position: 200% center;
+  }
+}
+
+.fx-gradient-text {
+  background: linear-gradient(90deg, #00e5ff, #ff2a6d, #22d3ee, #00e5ff);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: fx-gradient-pan 6s linear infinite;
+}
+
+/* Shine sweep + glare for cards */
+.card-shine {
+  position: relative;
+  overflow: hidden;
+}
+
+.card-shine::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 40%, rgba(255, 255, 255, 0.13) 50%, transparent 60%);
+  transform: translateX(-130%);
+  transition: transform 0.9s ease;
+  pointer-events: none;
+}
+
+.card-shine:hover::after {
+  transform: translateX(130%);
+}
+
+.tilt-glare {
+  position: relative;
+}
+
+.tilt-glare::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    340px circle at var(--glare-x, 50%) var(--glare-y, 50%),
+    rgba(0, 229, 255, 0.16),
+    transparent 65%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.tilt-glare:hover::before {
+  opacity: 1;
+}
+
+/* Glowing primary buttons */
+.btn-glow {
+  box-shadow:
+    0 0 0 1px rgba(0, 229, 255, 0.45),
+    0 8px 30px rgba(0, 229, 255, 0.35);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-glow:hover {
+  transform: translateY(-1px) scale(1.02);
+  box-shadow:
+    0 0 0 1px rgba(0, 229, 255, 0.65),
+    0 12px 42px rgba(0, 229, 255, 0.5);
+}
+
+/* Modal entrance */
+@keyframes fx-modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.modal-in {
+  animation: fx-modal-in 0.28s ease-out both;
+}
+
+/* Typewriter caret */
+@keyframes fx-caret-blink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+.fx-caret {
+  animation: fx-caret-blink 0.9s step-end infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fx-orb,
+  .fx-gradient-text,
+  .modal-in,
+  .fx-caret {
+    animation: none;
+  }
+  .card-shine::after {
+    display: none;
+  }
+}
+
+/* ---------- Cyberpunk UI ---------- */
+
+.cp-cut {
+  clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+  filter: drop-shadow(0 0 10px rgba(0, 229, 255, 0.18));
+}
+
+.cp-cut.btn-glow {
+  box-shadow: none;
+  filter: drop-shadow(0 0 16px rgba(0, 229, 255, 0.45));
+}
+
+.cp-cut.btn-glow:hover {
+  filter: drop-shadow(0 0 24px rgba(0, 229, 255, 0.6));
+}
+
+.fx-scanlines {
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.22) 0px,
+    rgba(0, 0, 0, 0.22) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+}
+
+.cp-glitch {
+  position: relative;
+}
+
+.cp-glitch::before,
+.cp-glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.cp-glitch::before {
+  color: #ff2a6d;
+  animation: cp-glitch-shift 3.5s infinite linear alternate-reverse;
+}
+
+.cp-glitch::after {
+  color: #00e5ff;
+  animation: cp-glitch-shift 2.8s infinite linear alternate;
+}
+
+@keyframes cp-glitch-shift {
+  0% { clip-path: inset(0 0 85% 0); transform: translate(-2px, -1px); opacity: 0.8; }
+  20% { clip-path: inset(30% 0 55% 0); transform: translate(2px, 1px); opacity: 0.8; }
+  40% { clip-path: inset(60% 0 25% 0); transform: translate(-2px, 0); opacity: 0.8; }
+  60% { clip-path: inset(10% 0 75% 0); transform: translate(2px, -1px); opacity: 0.8; }
+  80% { clip-path: inset(45% 0 40% 0); transform: translate(-2px, 1px); opacity: 0.8; }
+  100% { clip-path: inset(75% 0 5% 0); transform: translate(2px, 0); opacity: 0.8; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cp-glitch::before,
+  .cp-glitch::after {
+    animation: none;
+    display: none;
   }
 }
