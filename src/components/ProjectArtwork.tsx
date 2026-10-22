@@ -16,7 +16,7 @@ export const ProjectArtwork: React.FC<ArtworkProps> = ({ type, className = '' })
               <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#27272A" strokeWidth="1" />
             </pattern>
             <radialGradient id="cobalt-glow" cx="70%" cy="30%" r="60%">
-              <stop offset="0%" stopColor="#2563EB" stopOpacity="0.28" />
+              <stop offset="0%" stopColor="#00e5ff" stopOpacity="0.28" />
               <stop offset="100%" stopColor="#050505" stopOpacity="0" />
             </radialGradient>
           </defs>
@@ -36,7 +36,7 @@ export const ProjectArtwork: React.FC<ArtworkProps> = ({ type, className = '' })
             <div className="p-3.5 rounded-xl bg-zinc-900/90 border border-zinc-800">
               <div className="text-[11px] font-mono text-zinc-500 mb-1">NATIVE ANDROID</div>
               <div className="text-xs font-mono text-zinc-100 font-semibold">Kotlin & Compose</div>
-              <div className="mt-1.5 text-[11px] font-mono text-blue-400">ACE AI · NoorQuran</div>
+              <div className="mt-1.5 text-[11px] font-mono text-cyan-300">ACE AI · NoorQuran</div>
             </div>
             <div className="p-3.5 rounded-xl bg-zinc-900/90 border border-zinc-800">
               <div className="text-[11px] font-mono text-zinc-500 mb-1">PQ CRYPTO WEB</div>
@@ -54,30 +54,30 @@ export const ProjectArtwork: React.FC<ArtworkProps> = ({ type, className = '' })
           <div className="p-4 rounded-xl bg-[#050505]/95 border border-zinc-800 font-mono text-xs leading-relaxed text-zinc-300 overflow-x-auto">
             <div className="text-zinc-500">{'# _config.yml — Mohammad Taha Azizi Ahad'}</div>
             <div>
-              <span className="text-blue-400">url: </span>
+              <span className="text-cyan-300">url: </span>
               <span className="text-amber-300">"https://indirect-b.github.io"</span>
             </div>
             <div>
-              <span className="text-blue-400">author: </span>
+              <span className="text-cyan-300">author: </span>
               <span className="text-zinc-100">"Mohammad Taha Azizi Ahad"</span>
             </div>
             <div>
-              <span className="text-blue-400">focus: </span>
+              <span className="text-cyan-300">focus: </span>
               <span className="text-zinc-300">["Native Android (Kotlin)", "Post-Quantum Web", "AI Automation"]</span>
             </div>
             <div className="mt-2 text-zinc-500">{'<!-- Liquid Loop over indirect-b Repositories -->'}</div>
             <div>
-              <span className="text-blue-400">{'{% for '}</span>
+              <span className="text-cyan-300">{'{% for '}</span>
               <span>repo </span>
-              <span className="text-blue-400">{'in '}</span>
+              <span className="text-cyan-300">{'in '}</span>
               <span className="text-emerald-400">site.data.projects</span>
-              <span className="text-blue-400">{' %}'}</span>
+              <span className="text-cyan-300">{' %}'}</span>
             </div>
             <div className="pl-4 text-zinc-200">
               {'<a href="{{ repo.repo_url }}">{{ repo.slug }} ({{ repo.language }})</a>'}
             </div>
             <div>
-              <span className="text-blue-400">{'{% endfor %}'}</span>
+              <span className="text-cyan-300">{'{% endfor %}'}</span>
             </div>
           </div>
         </div>
@@ -105,10 +105,10 @@ export const ProjectArtwork: React.FC<ArtworkProps> = ({ type, className = '' })
             ))}
           </g>
           {/* Post-Quantum ML-KEM-768 + VOPRF Diagram for chat-app */}
-          <path d="M140 130 L300 60 L460 130 L300 200 Z" stroke="#2563EB" strokeWidth="1.5" strokeDasharray="4 4" />
+          <path d="M140 130 L300 60 L460 130 L300 200 Z" stroke="#00e5ff" strokeWidth="1.5" strokeDasharray="4 4" />
           <line x1="140" y1="130" x2="460" y2="130" stroke="#3F3F46" strokeWidth="1.5" />
-          <line x1="300" y1="60" x2="300" y2="200" stroke="#2563EB" strokeWidth="1.5" />
-          <rect x="235" y="42" width="130" height="36" rx="8" fill="#18181B" stroke="#2563EB" strokeWidth="2" />
+          <line x1="300" y1="60" x2="300" y2="200" stroke="#00e5ff" strokeWidth="1.5" />
+          <rect x="235" y="42" width="130" height="36" rx="8" fill="#18181B" stroke="#00e5ff" strokeWidth="2" />
           <text x="300" y="64" textAnchor="middle" fill="#FAFAFA" fontSize="11" fontFamily="JetBrains Mono">ML-KEM-768 + ECDH</text>
           <rect x="75" y="112" width="130" height="36" rx="8" fill="#18181B" stroke="#52525B" strokeWidth="1.5" />
           <text x="140" y="134" textAnchor="middle" fill="#A1A1AA" fontSize="10" fontFamily="JetBrains Mono">VOPRF RFC 9497</text>
@@ -134,7 +134,7 @@ export const ProjectArtwork: React.FC<ArtworkProps> = ({ type, className = '' })
         <svg viewBox="0 0 400 220" className="w-full h-full object-cover" fill="none" xmlns="http://www.w3.org/2000/svg">
           <rect width="400" height="220" fill="#09090B" />
           <circle cx="200" cy="110" r="78" stroke="#27272A" strokeWidth="1" />
-          <circle cx="200" cy="110" r="54" stroke="#2563EB" strokeWidth="1.2" strokeDasharray="3 3" />
+          <circle cx="200" cy="110" r="54" stroke="#00e5ff" strokeWidth="1.2" strokeDasharray="3 3" />
           <path d="M70 110 H330" stroke="#27272A" strokeWidth="1" />
           <rect x="115" y="86" width="170" height="48" rx="8" fill="#18181B" stroke="#3F3F46" strokeWidth="1.5" />
           <text x="200" y="107" textAnchor="middle" fill="#FAFAFA" fontSize="12" fontFamily="JetBrains Mono">NOOR QURAN ANDROID</text>
@@ -151,10 +151,10 @@ export const ProjectArtwork: React.FC<ArtworkProps> = ({ type, className = '' })
             <line x1="140" y1="130" x2="300" y2="180" />
             <line x1="300" y1="180" x2="460" y2="130" />
           </g>
-          <line x1="140" y1="130" x2="460" y2="130" stroke="#2563EB" strokeWidth="2" />
+          <line x1="140" y1="130" x2="460" y2="130" stroke="#00e5ff" strokeWidth="2" />
           <circle cx="140" cy="130" r="24" fill="#18181B" stroke="#52525B" strokeWidth="1.5" />
           <text x="140" y="134" textAnchor="middle" fill="#E4E4E7" fontSize="10" fontFamily="JetBrains Mono">CLIENT</text>
-          <circle cx="300" cy="130" r="32" fill="#18181B" stroke="#2563EB" strokeWidth="2" />
+          <circle cx="300" cy="130" r="32" fill="#18181B" stroke="#00e5ff" strokeWidth="2" />
           <text x="300" y="134" textAnchor="middle" fill="#FAFAFA" fontSize="10" fontFamily="JetBrains Mono">VPN TUNNEL</text>
           <circle cx="460" cy="130" r="24" fill="#18181B" stroke="#60A5FA" strokeWidth="1.5" />
           <text x="460" y="134" textAnchor="middle" fill="#E4E4E7" fontSize="10" fontFamily="JetBrains Mono">CA NODE</text>
@@ -167,12 +167,12 @@ export const ProjectArtwork: React.FC<ArtworkProps> = ({ type, className = '' })
           <polyline
             points="50,155 115,135 180,142 245,90 310,100 355,62"
             fill="none"
-            stroke="#2563EB"
+            stroke="#00e5ff"
             strokeWidth="2.5"
           />
           <line x1="50" y1="175" x2="355" y2="175" stroke="#27272A" strokeWidth="1.5" />
           <circle cx="245" cy="90" r="5" fill="#FAFAFA" />
-          <circle cx="355" cy="62" r="5" fill="#2563EB" />
+          <circle cx="355" cy="62" r="5" fill="#00e5ff" />
           <text x="200" y="48" textAnchor="middle" fill="#A1A1AA" fontSize="11" fontFamily="JetBrains Mono">
             {type === 'edge-kv' ? 'GITHUB ACTIONS APK CI/CD' : 'OPEN SOURCE ANDROID & AI'}
           </text>
