@@ -158,13 +158,16 @@ export function Reveal({
   );
 }
 
-/** 3D tilt + moving glare on hover (mouse only; harmless on touch). */
+/** 3D tilt + moving glare on hover (mouse only; harmless on touch).
+ *  `quantum` deepens the rotation for the QUANTUM mode cards. */
 export function Tilt({
   children,
   className,
+  quantum,
 }: {
   children: React.ReactNode;
   className?: string;
+  quantum?: boolean;
 }) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -174,8 +177,10 @@ export function Tilt({
     const rect = el.getBoundingClientRect();
     const px = (e.clientX - rect.left) / rect.width - 0.5;
     const py = (e.clientY - rect.top) / rect.height - 0.5;
+    const rx = quantum ? 11 : 7;
+    const ry = quantum ? 14 : 9;
     el.style.transition = 'transform 0.1s ease-out';
-    el.style.transform = `perspective(900px) rotateX(${(-py * 7).toFixed(2)}deg) rotateY(${(px * 9).toFixed(2)}deg) translateY(-3px)`;
+    el.style.transform = `perspective(900px) rotateX(${(-py * rx).toFixed(2)}deg) rotateY(${(px * ry).toFixed(2)}deg) translateY(-3px)`;
     el.style.setProperty('--glare-x', `${((px + 0.5) * 100).toFixed(0)}%`);
     el.style.setProperty('--glare-y', `${((py + 0.5) * 100).toFixed(0)}%`);
   };

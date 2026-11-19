@@ -41,7 +41,7 @@ export const ProjectArtwork: React.FC<ArtworkProps> = ({ type, className = '' })
             <div className="p-3.5 rounded-xl bg-zinc-900/90 border border-zinc-800">
               <div className="text-[11px] font-mono text-zinc-500 mb-1">PQ CRYPTO WEB</div>
               <div className="text-xs font-mono text-zinc-100 font-semibold">ML-KEM-768</div>
-              <div className="mt-1.5 text-[11px] font-mono text-amber-400">chat-app v6.0</div>
+              <div className="mt-1.5 text-[11px] font-mono text-amber-400">chat-app v6.5.0</div>
             </div>
             <div className="p-3.5 rounded-xl bg-zinc-900/90 border border-blue-600/50">
               <div className="text-[11px] font-mono text-zinc-500 mb-1">GITHUB PAGES</div>
