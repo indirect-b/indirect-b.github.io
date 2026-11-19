@@ -103,7 +103,7 @@ export const TRANSLATIONS: Record<SupportedLocale, LocaleDictionary> = {
     navLiveMessenger: 'دموی پیام‌رسان',
     navContact: 'ارتباط با من',
     ctaViewProjects: 'مشاهده پروژه‌ها',
-    ctaLiveChatApp: 'اجرای زنده chat-app v6.0',
+    ctaLiveChatApp: 'اجرای زنده chat-app v6.5.0',
     ctaThemeDark: 'تم تاریک',
     ctaThemeLight: 'تم روشن',
     ctaJekyllSource: 'سورس Jekyll',
@@ -155,7 +155,7 @@ export const TRANSLATIONS: Record<SupportedLocale, LocaleDictionary> = {
     modalViewLive: 'مشاهده دموی زنده',
     projects: {
       'chat-app': {
-        title: 'پیام‌رسان بلادرنگ فارسی با رمزنگاری پسا-کوانتومی (chat-app v6.0)',
+        title: 'پیام‌رسان بلادرنگ فارسی با رمزنگاری پسا-کوانتومی (chat-app v6.5.0)',
         categoryLabel: 'امنیت و فول‌استک وب',
         summary:
           'پیام‌رسان وب بلادرنگ سطح سازمانی توسعه یافته با React 19، TypeScript، Express و Socket.IO مجهز به موتور رمزنگاری ترکیبی پسا-کوانتومی (ML-KEM-768 + ECDH P-256 Ratchet + AES-GCM 256-bit) و احراز هویت ناشناس مبتنی بر Ristretto255-VOPRF (RFC 9497).',
@@ -250,7 +250,7 @@ export const TRANSLATIONS: Record<SupportedLocale, LocaleDictionary> = {
     navLiveMessenger: 'Live Messenger',
     navContact: 'Contact',
     ctaViewProjects: 'Explore Projects',
-    ctaLiveChatApp: 'Launch chat-app v6.0',
+    ctaLiveChatApp: 'Launch chat-app v6.5.0',
     ctaThemeDark: 'Dark Theme',
     ctaThemeLight: 'Light Theme',
     ctaJekyllSource: 'Jekyll Source',
@@ -302,7 +302,7 @@ export const TRANSLATIONS: Record<SupportedLocale, LocaleDictionary> = {
     modalViewLive: 'Launch Live Demo',
     projects: {
       'chat-app': {
-        title: 'Post-Quantum Real-Time Web Messenger (chat-app v6.0)',
+        title: 'Post-Quantum Real-Time Web Messenger (chat-app v6.5.0)',
         categoryLabel: 'Security & Full-Stack Web',
         summary:
           'Enterprise-grade real-time web messenger built with React 19, TypeScript, Express, and Socket.IO featuring a Post-Quantum Hybrid Cryptographic Engine (ML-KEM-768 + ECDH P-256 Ratchet + AES-GCM 256-bit) and Ristretto255-VOPRF (RFC 9497) blinded authentication.',
@@ -397,7 +397,7 @@ export const TRANSLATIONS: Record<SupportedLocale, LocaleDictionary> = {
     navLiveMessenger: 'ライブデモ',
     navContact: 'お問い合わせ',
     ctaViewProjects: 'プロジェクト一覧',
-    ctaLiveChatApp: 'chat-app v6.0 ライブ起動',
+    ctaLiveChatApp: 'chat-app v6.5.0 ライブ起動',
     ctaThemeDark: 'ダークモード',
     ctaThemeLight: 'ライトモード',
     ctaJekyllSource: 'Jekyll ソース',
@@ -449,7 +449,7 @@ export const TRANSLATIONS: Record<SupportedLocale, LocaleDictionary> = {
     modalViewLive: 'ライブデモを開く',
     projects: {
       'chat-app': {
-        title: '耐量子暗号リアルタイムWebメッセンジャー (chat-app v6.0)',
+        title: '耐量子暗号リアルタイムWebメッセンジャー (chat-app v6.5.0)',
         categoryLabel: 'セキュリティ & フルスタックWeb',
         summary:
           'React 19、TypeScript、Express、Socket.IO で構築されたエンタープライズ仕様のリアルタイムWebメッセンジャー。耐量子ハイブリッド暗号エンジン (ML-KEM-768 + ECDH P-256 Ratchet + AES-GCM 256-bit) と Ristretto255-VOPRF (RFC 9497) ブラインド認証を搭載。',
@@ -544,7 +544,7 @@ export const TRANSLATIONS: Record<SupportedLocale, LocaleDictionary> = {
     navLiveMessenger: 'Live-Messenger',
     navContact: 'Kontakt',
     ctaViewProjects: 'Projekte ansehen',
-    ctaLiveChatApp: 'chat-app v6.0 starten',
+    ctaLiveChatApp: 'chat-app v6.5.0 starten',
     ctaThemeDark: 'Dunkles Design',
     ctaThemeLight: 'Helles Design',
     ctaJekyllSource: 'Jekyll-Quellcode',
@@ -596,7 +596,7 @@ export const TRANSLATIONS: Record<SupportedLocale, LocaleDictionary> = {
     modalViewLive: 'Live-Demo öffnen',
     projects: {
       'chat-app': {
-        title: 'Post-Quanten Echtzeit-Web-Messenger (chat-app v6.0)',
+        title: 'Post-Quanten Echtzeit-Web-Messenger (chat-app v6.5.0)',
         categoryLabel: 'Sicherheit & Full-Stack-Web',
         summary:
           'Full-Stack-Echtzeit-Messenger auf Basis von React 19, TypeScript, Express und Socket.IO mit hybrider Post-Quanten-Kryptographie (ML-KEM-768 + ECDH P-256 Ratchet + AES-GCM 256-Bit) und blinder Ristretto255-VOPRF-Authentifizierung (RFC 9497).',
@@ -691,7 +691,7 @@ export const TRANSLATIONS: Record<SupportedLocale, LocaleDictionary> = {
     navLiveMessenger: 'Демо мессенджера',
     navContact: 'Контакты',
     ctaViewProjects: 'Смотреть проекты',
-    ctaLiveChatApp: 'Запустить chat-app v6.0',
+    ctaLiveChatApp: 'Запустить chat-app v6.5.0',
     ctaThemeDark: 'Тёмная тема',
     ctaThemeLight: 'Светлая тема',
     ctaJekyllSource: 'Исходники Jekyll',
@@ -743,7 +743,7 @@ export const TRANSLATIONS: Record<SupportedLocale, LocaleDictionary> = {
     modalViewLive: 'Открыть живое демо',
     projects: {
       'chat-app': {
-        title: 'Веб-мессенджер с постквантовым шифрованием (chat-app v6.0)',
+        title: 'Веб-мессенджер с постквантовым шифрованием (chat-app v6.5.0)',
         categoryLabel: 'Безопасность и Full-Stack Веб',
         summary:
           'Полнофункциональный веб-мессенджер реального времени на React 19, TypeScript, Express и Socket.IO, оснащённый гибридным постквантовым криптографическим движком (ML-KEM-768 + ECDH P-256 Ratchet + AES-GCM 256-bit) и слепой аутентификацией Ristretto255-VOPRF (RFC 9497).',
@@ -837,7 +837,7 @@ export const TRANSLATIONS: Record<SupportedLocale, LocaleDictionary> = {
     navLiveMessenger: '在线演示',
     navContact: '联系合作',
     ctaViewProjects: '浏览项目',
-    ctaLiveChatApp: '启动 chat-app v6.0',
+    ctaLiveChatApp: '启动 chat-app v6.5.0',
     ctaThemeDark: '深色模式',
     ctaThemeLight: '浅色模式',
     ctaJekyllSource: 'Jekyll 源码',
@@ -888,7 +888,7 @@ export const TRANSLATIONS: Record<SupportedLocale, LocaleDictionary> = {
     modalViewLive: '打开在线演示',
     projects: {
       'chat-app': {
-        title: '后量子加密实时 Web 即时通讯系统 (chat-app v6.0)',
+        title: '后量子加密实时 Web 即时通讯系统 (chat-app v6.5.0)',
         categoryLabel: '安全与全栈 Web',
         summary:
           '基于 React 19、TypeScript、Express 与 Socket.IO 构建的企业级实时通讯系统，内置混合后量子加密引擎 (ML-KEM-768 + ECDH P-256 棘轮 + AES-GCM 256-bit) 与 Ristretto255-VOPRF (RFC 9497) 盲化身份认证。',
@@ -983,7 +983,7 @@ export const TRANSLATIONS: Record<SupportedLocale, LocaleDictionary> = {
     navLiveMessenger: 'Démo Messagerie',
     navContact: 'Contact',
     ctaViewProjects: 'Voir les projets',
-    ctaLiveChatApp: 'Lancer chat-app v6.0',
+    ctaLiveChatApp: 'Lancer chat-app v6.5.0',
     ctaThemeDark: 'Thème Sombre',
     ctaThemeLight: 'Thème Clair',
     ctaJekyllSource: 'Source Jekyll',
@@ -1036,7 +1036,7 @@ export const TRANSLATIONS: Record<SupportedLocale, LocaleDictionary> = {
     modalViewLive: 'Voir la démo live',
     projects: {
       'chat-app': {
-        title: 'Messagerie Web Temps Réel Post-Quantique (chat-app v6.0)',
+        title: 'Messagerie Web Temps Réel Post-Quantique (chat-app v6.5.0)',
         categoryLabel: 'Sécurité & Web Full-Stack',
         summary:
           'Messagerie Web temps réel de classe entreprise bâtie avec React 19, TypeScript, Express et Socket.IO, dotée d’un moteur cryptographique hybride post-quantique (ML-KEM-768 + ECDH P-256 Ratchet + AES-GCM 256 bits) et d’une authentification aveugle Ristretto255-VOPRF (RFC 9497).',
@@ -1131,7 +1131,7 @@ export const TRANSLATIONS: Record<SupportedLocale, LocaleDictionary> = {
     navLiveMessenger: 'Demo Mensajería',
     navContact: 'Contacto',
     ctaViewProjects: 'Ver Proyectos',
-    ctaLiveChatApp: 'Abrir chat-app v6.0',
+    ctaLiveChatApp: 'Abrir chat-app v6.5.0',
     ctaThemeDark: 'Tema Oscuro',
     ctaThemeLight: 'Tema Claro',
     ctaJekyllSource: 'Código Jekyll',
@@ -1184,7 +1184,7 @@ export const TRANSLATIONS: Record<SupportedLocale, LocaleDictionary> = {
     modalViewLive: 'Ver Demo en Vivo',
     projects: {
       'chat-app': {
-        title: 'Mensajero Web en Tiempo Real con Criptografía Poscuántica (chat-app v6.0)',
+        title: 'Mensajero Web en Tiempo Real con Criptografía Poscuántica (chat-app v6.5.0)',
         categoryLabel: 'Seguridad y Web Full-Stack',
         summary:
           'Mensajero web empresarial en tiempo real desarrollado con React 19, TypeScript, Express y Socket.IO, equipado con un motor criptográfico híbrido poscuántico (ML-KEM-768 + ECDH P-256 Ratchet + AES-GCM 256-bit) y autenticación ciega Ristretto255-VOPRF (RFC 9497).',

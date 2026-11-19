@@ -36,6 +36,8 @@ export interface SiteConfig {
   englishBio: string;
   themeStyle: 'monograph-dark' | 'editorial-paper';
   jekyllThemeEngine: 'custom-liquid' | 'minima-rtl';
+  /** Live public repo count from the GitHub API (fallback: 16). */
+  publicRepos?: number;
 }
 
 export const INITIAL_SITE_CONFIG: SiteConfig = {
@@ -52,13 +54,14 @@ export const INITIAL_SITE_CONFIG: SiteConfig = {
   englishBio: 'Mobile Developer & Linux user. Creating native Android apps and exploring AI automation.',
   themeStyle: 'monograph-dark',
   jekyllThemeEngine: 'custom-liquid',
+  publicRepos: 16,
 };
 
 export const INITIAL_PROJECTS: ProjectItem[] = [
   {
     id: 'repo-chat-app',
     slug: 'chat-app',
-    title: 'پیام‌رسان بلادرنگ فارسی با رمزنگاری پسا-کوانتومی (chat-app v6.0)',
+    title: 'پیام‌رسان بلادرنگ فارسی با رمزنگاری پسا-کوانتومی (chat-app v6.5.0)',
     subtitle: 'Persian Real-Time Web Messenger — Post-Quantum ML-KEM-768 & VOPRF Edition',
     category: 'security-web',
     categoryLabel: 'امنیت و فول‌استک وب',
