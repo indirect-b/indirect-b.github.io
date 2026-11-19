@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import {
   INITIAL_PROJECTS,
   INITIAL_SITE_CONFIG,
@@ -16,6 +16,21 @@ import {
   getLocalizedSiteConfig,
 } from './data/i18n';
 import { ProjectArtwork } from './components/ProjectArtwork';
+import {
+  CardArtwork3D,
+  HeroArtwork3D,
+  SkillArtwork3D,
+  ModalViewer3D,
+} from './components/ProjectArtwork3D';
+import { StageProvider } from './three/stage';
+import { ParticleField } from './three/ParticleField';
+import {
+  loadLow,
+  loadMode,
+  prefersReducedMotion,
+  saveLow,
+  saveMode,
+} from './three/quality';
 import {
   BackgroundFX,
   CursorGlow,
@@ -58,6 +73,49 @@ export default function App() {
   const [isSyncingGithub, setIsSyncingGithub] = useState<boolean>(false);
   const [syncNotice, setSyncNotice] = useState<string | null>(null);
   const [avatarError, setAvatarError] = useState<boolean>(false);
+  // QUANTUM mode: the 3D experience (default). CLASSIC renders the site
+  // exactly as before. Persisted in localStorage.
+  const [siteMode, setSiteMode] = useState<'quantum' | 'classic'>(() => loadMode());
+  // Low quality: cuts particle counts + pixel ratio for weak GPUs.
+  const [lowQ, setLowQ] = useState<boolean>(() => {
+    const saved = loadLow();
+    if (saved !== null) return saved;
+    return prefersReducedMotion();
+  });
+  const autoLowCheckedRef = useRef(false);
+
+  useEffect(() => {
+    saveMode(siteMode);
+  }, [siteMode]);
+
+  useEffect(() => {
+    saveLow(lowQ);
+  }, [lowQ]);
+
+  // Auto Low fallback: if the page can't hold 20 FPS for the first ~3.5s
+  // in QUANTUM mode (and the user never chose a quality), drop to Low.
+  useEffect(() => {
+    if (siteMode !== 'quantum' || autoLowCheckedRef.current) return;
+    if (loadLow() !== null) {
+      autoLowCheckedRef.current = true;
+      return;
+    }
+    autoLowCheckedRef.current = true;
+    let frames = 0;
+    let raf = 0;
+    const start = performance.now();
+    const tick = () => {
+      frames++;
+      if (performance.now() - start < 3500) {
+        raf = requestAnimationFrame(tick);
+        return;
+      }
+      const fps = frames / ((performance.now() - start) / 1000);
+      if (fps < 20) setLowQ(true);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [siteMode]);
 
   const localeMeta = useMemo(
     () => SUPPORTED_LOCALES.find((l) => l.code === locale) || SUPPORTED_LOCALES[0],
@@ -103,6 +161,10 @@ export default function App() {
           englishName: userData.name || prev.englishName,
           avatarUrl: userData.avatar_url || prev.avatarUrl,
           englishBio: userData.bio || prev.englishBio,
+          publicRepos:
+            typeof userData.public_repos === 'number'
+              ? userData.public_repos
+              : prev.publicRepos,
         }));
 
         if (Array.isArray(reposData) && reposData.length > 0) {
@@ -186,6 +248,15 @@ export default function App() {
     [baseConfig, locale]
   );
 
+  // Live repo count in the KPI: "9 مخزن عمومی" → "16 مخزن عمومی" etc.
+  // Works for all 8 locales — only the leading number is replaced.
+  const kpiReposText = useMemo(() => {
+    const raw = t.kpiReposValue;
+    const count = baseConfig.publicRepos;
+    if (!count) return raw;
+    return raw.replace(/^\d+/, String(count));
+  }, [t.kpiReposValue, baseConfig.publicRepos]);
+
   const localizedProjects = useMemo(
     () => rawProjects.map((p) => getLocalizedProject(p, locale)),
     [rawProjects, locale]
@@ -258,6 +329,7 @@ export default function App() {
   const isRtl = localeMeta.dir === 'rtl';
 
   return (
+    <StageProvider enabled={siteMode === 'quantum'} low={lowQ}>
     <div
       dir={localeMeta.dir}
       className={`min-h-screen transition-colors duration-150 ${
@@ -266,7 +338,11 @@ export default function App() {
           : 'bg-[#050505] text-zinc-100'
       }`}
     >
-      <BackgroundFX dim={isLightPaper} />
+      {siteMode === 'quantum' ? (
+        <ParticleField dim={isLightPaper} low={lowQ} />
+      ) : (
+        <BackgroundFX dim={isLightPaper} />
+      )}
       <CursorGlow />
       {/* Top Bar Contract: Strictly 1 row, 3 zones separated by gap-8 */}
       <header
@@ -315,8 +391,51 @@ export default function App() {
             </a>
           </nav>
 
-          {/* Zone 3: 1 primary action */}
-          <div className="flex items-center shrink-0">
+          {/* Zone 3: mode switcher + Low toggle + 1 primary action */}
+          <div className="flex items-center gap-2 shrink-0">
+            {/* Active Theory-style mode switcher: CLASSIC <-> QUANTUM */}
+            <div
+              className="hidden sm:flex items-center rounded-full border border-zinc-700/80 bg-zinc-900/80 p-0.5 font-mono text-[11px]"
+              dir="ltr"
+              role="group"
+              aria-label="Site mode: Classic or Quantum 3D"
+            >
+              <button
+                type="button"
+                onClick={() => setSiteMode('classic')}
+                className={`px-2.5 py-1 rounded-full transition-colors whitespace-nowrap ${
+                  siteMode === 'classic'
+                    ? 'bg-[#00e5ff] text-black font-semibold'
+                    : 'text-zinc-400 hover:text-zinc-100'
+                }`}
+              >
+                « CLASSIC
+              </button>
+              <button
+                type="button"
+                onClick={() => setSiteMode('quantum')}
+                className={`px-2.5 py-1 rounded-full transition-colors whitespace-nowrap ${
+                  siteMode === 'quantum'
+                    ? 'bg-[#00e5ff] text-black font-semibold'
+                    : 'text-zinc-400 hover:text-zinc-100'
+                }`}
+              >
+                QUANTUM »
+              </button>
+            </div>
+            <button
+              type="button"
+              onClick={() => setLowQ((v) => !v)}
+              title="Low quality — lighter 3D for weak GPUs"
+              aria-pressed={lowQ}
+              className={`px-2.5 py-1.5 text-[11px] font-mono rounded-full border transition-colors whitespace-nowrap ${
+                lowQ
+                  ? 'bg-amber-300 text-black border-amber-300 font-semibold'
+                  : 'border-zinc-700 text-zinc-400 hover:text-zinc-100'
+              }`}
+            >
+              ⚡ LOW
+            </button>
             <a
               href={`https://github.com/${baseConfig.githubUsername}`}
               target="_blank"
@@ -510,7 +629,11 @@ export default function App() {
 
             {/* Secondary Column: Visual Showcase Container at matching height */}
             <div className="lg:col-span-5 flex">
-              <ProjectArtwork type="hero" className="w-full" />
+              {siteMode === 'quantum' ? (
+                <HeroArtwork3D className="w-full" />
+              ) : (
+                <ProjectArtwork type="hero" className="w-full" />
+              )}
             </div>
           </div>
 
@@ -522,7 +645,7 @@ export default function App() {
           >
             <div>
               <div className="text-2xl lg:text-3xl font-bold font-mono tabular-nums">
-                <CountUp value={t.kpiReposValue} />
+                <CountUp value={kpiReposText} />
               </div>
               <div
                 className={`text-xs mt-1 ${
@@ -718,22 +841,30 @@ export default function App() {
                 <Tilt
                   key={project.id}
                   className={isWide ? 'lg:col-span-2' : 'lg:col-span-1'}
+                  quantum={siteMode === 'quantum'}
                 >
                 <article
                   onClick={() => setActiveProjectSlug(project.slug)}
-                  className={`group cursor-pointer rounded-2xl border overflow-hidden flex flex-col justify-between transition-transform duration-150 hover:-translate-y-0.5 h-full card-shine cp-cut ${
+                  className={`group cursor-pointer rounded-2xl border ${siteMode === 'quantum' ? 'q3d' : 'overflow-hidden'} flex flex-col justify-between transition-transform duration-150 hover:-translate-y-0.5 h-full card-shine cp-cut ${
                     isLightPaper
                       ? 'bg-white border-zinc-200 hover:border-zinc-400'
                       : 'bg-[#0B0B0E] border-zinc-800/90 hover:border-cyan-400/60'
                   }`}
                 >
                   <div>
-                    <ProjectArtwork
-                      type={project.visualType}
-                      className="h-48 sm:h-56"
-                    />
+                    {siteMode === 'quantum' ? (
+                      <CardArtwork3D
+                        type={project.visualType}
+                        className="h-48 sm:h-56 q3d-art"
+                      />
+                    ) : (
+                      <ProjectArtwork
+                        type={project.visualType}
+                        className="h-48 sm:h-56"
+                      />
+                    )}
 
-                    <div className="p-6">
+                    <div className={`p-6 ${siteMode === 'quantum' ? 'q3d-body' : ''}`}>
                       {/* Zero-Pill Metadata Discipline: Unboxed text with · separators */}
                       <div
                         className={`flex flex-wrap items-center gap-2 text-xs mb-3 ${
@@ -779,7 +910,7 @@ export default function App() {
                   </div>
 
                   <div
-                    className={`px-6 py-4 border-t flex items-center justify-between text-xs ${
+                    className={`px-6 py-4 border-t flex items-center justify-between text-xs ${siteMode === 'quantum' ? 'q3d-foot ' : ''}${
                       isLightPaper
                         ? 'border-zinc-100 text-zinc-600'
                         : 'border-zinc-800/70 text-zinc-400'
@@ -838,6 +969,9 @@ export default function App() {
                   : 'bg-[#0B0B0E] border-zinc-800/90'
               }`}
             >
+              {siteMode === 'quantum' && (
+                <SkillArtwork3D domain="android" className="h-32 mb-4" />
+              )}
               <div className="text-xs font-mono text-[#00e5ff] mb-2" dir="ltr">
                 01. NATIVE ANDROID ENGINEERING
               </div>
@@ -861,6 +995,9 @@ export default function App() {
                   : 'bg-[#0B0B0E] border-zinc-800/90'
               }`}
             >
+              {siteMode === 'quantum' && (
+                <SkillArtwork3D domain="crypto" className="h-32 mb-4" />
+              )}
               <div className="text-xs font-mono text-[#00e5ff] mb-2" dir="ltr">
                 02. FULL-STACK &amp; POST-QUANTUM SECURITY
               </div>
@@ -884,6 +1021,9 @@ export default function App() {
                   : 'bg-[#0B0B0E] border-zinc-800/90'
               }`}
             >
+              {siteMode === 'quantum' && (
+                <SkillArtwork3D domain="ai" className="h-32 mb-4" />
+              )}
               <div className="text-xs font-mono text-[#00e5ff] mb-2" dir="ltr">
                 03. AI AUTOMATION &amp; LINUX CI/CD
               </div>
@@ -1101,7 +1241,7 @@ export default function App() {
               rel="noopener noreferrer"
               className="hover:underline"
             >
-              chat-app v6.0
+              chat-app v6.5.0
             </a>
             <span>·</span>
             <button
@@ -1157,10 +1297,18 @@ export default function App() {
                 </p>
               </div>
 
-              <ProjectArtwork
-                type={activeProjectModal.visualType}
-                className="h-56 rounded-xl border border-zinc-800"
-              />
+              {siteMode === 'quantum' ? (
+                <ModalViewer3D
+                  type={activeProjectModal.visualType}
+                  low={lowQ}
+                  className="h-56 rounded-xl border border-zinc-800"
+                />
+              ) : (
+                <ProjectArtwork
+                  type={activeProjectModal.visualType}
+                  className="h-56 rounded-xl border border-zinc-800"
+                />
+              )}
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
@@ -1233,5 +1381,6 @@ export default function App() {
         </div>
       )}
     </div>
+    </StageProvider>
   );
 }

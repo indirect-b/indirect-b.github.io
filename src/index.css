@@ -191,6 +191,25 @@
   }
 }
 
+/* ---------- Quantum mode: true 3D depth layers on cards ---------- */
+/* The article keeps preserve-3d (overflow-hidden is dropped in QUANTUM mode)
+ * so the artwork and text float at different depths under the Tilt. */
+.q3d {
+  transform-style: preserve-3d;
+}
+
+.q3d .q3d-art {
+  transform: translateZ(38px);
+}
+
+.q3d .q3d-body {
+  transform: translateZ(20px);
+}
+
+.q3d .q3d-foot {
+  transform: translateZ(12px);
+}
+
 /* ---------- Cyberpunk UI ---------- */
 
 .cp-cut {
