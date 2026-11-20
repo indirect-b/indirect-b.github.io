@@ -1,6 +1,37 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
-  <rect width="64" height="64" rx="16" fill="#050505"/>
-  <rect x="2" y="2" width="60" height="60" rx="14" stroke="#2563EB" stroke-width="3"/>
-  <path d="M14 44V20H20.5L26.5 32.5L32.5 20H39V44H33.5V29.5L28.2 40H24.8L19.5 29.5V44H14Z" fill="#FAFAFA"/>
-  <path d="M42 25.5V20H54V25.5H50.8V44H45.2V25.5H42Z" fill="#2563EB"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <!-- Prismatic Rainbow Glass Gradient for Outer Ring -->
+    <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffe66e"/>
+      <stop offset="35%" stop-color="#f55aa0"/>
+      <stop offset="70%" stop-color="#00e5ff"/>
+      <stop offset="100%" stop-color="#78ffb4"/>
+    </linearGradient>
+    
+    <!-- Clean Glass Gradient for 3D Letter M -->
+    <linearGradient id="mGrad" x1="50%" y1="20%" x2="50%" y2="80%">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="60%" stop-color="#e8f8ff"/>
+      <stop offset="100%" stop-color="#aae8ff"/>
+    </linearGradient>
+
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="2" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Dark Background Disk -->
+  <circle cx="50" cy="50" r="48" fill="#06070a"/>
+
+  <!-- Outer Prismatic Ring -->
+  <circle cx="50" cy="50" r="42" fill="none" stroke="url(#ringGrad)" stroke-width="7" filter="url(#glow)"/>
+  <circle cx="50" cy="50" r="42" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.5"/>
+
+  <!-- Inner 3D Geometric Letter M -->
+  <polygon points="24,74 24,26 35,26 50,52 65,26 76,26 76,74 65,74 65,43 50,64 35,43 35,74"
+           fill="url(#mGrad)"
+           stroke="#00e5ff"
+           stroke-width="1.2"
+           stroke-linejoin="round"/>
 </svg>
