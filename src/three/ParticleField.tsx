@@ -80,11 +80,28 @@ export function ParticleField({ dim, low }: { dim?: boolean; low: boolean }) {
   }, []);
 
   return (
-    <canvas
-      ref={canvasRef}
-      aria-hidden="true"
-      className="pointer-events-none fixed inset-0 z-0 h-full w-full"
-      style={{ opacity: dim ? 0.3 : 0.9 }}
-    />
+    <>
+      <canvas
+        ref={canvasRef}
+        aria-hidden="true"
+        className="pointer-events-none fixed inset-0 z-0 h-full w-full"
+        style={{
+          // Dim the field hard in Low mode so the toggle visibly clears the noise.
+          opacity: dim ? (low ? 0.08 : 0.18) : low ? 0.22 : 0.5,
+        }}
+      />
+      {/* Text scrim: fades the field out behind the central content column
+          (where headings, body copy, code and stats sit) while leaving the
+          particle field visible at the page edges. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none fixed inset-0 z-0"
+        style={{
+          background: dim
+            ? 'radial-gradient(ellipse 78% 68% at 50% 36%, rgba(248,247,244,0.94) 0%, rgba(248,247,244,0.55) 55%, rgba(248,247,244,0) 82%)'
+            : 'radial-gradient(ellipse 78% 68% at 50% 36%, rgba(5,5,5,0.88) 0%, rgba(5,5,5,0.45) 55%, rgba(5,5,5,0) 82%)',
+        }}
+      />
+    </>
   );
 }

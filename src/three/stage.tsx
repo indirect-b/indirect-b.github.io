@@ -22,12 +22,13 @@ interface ViewRec {
   el: HTMLElement;
   kind: StageKind;
   type: string;
+  large: boolean;
   scene: ViewScene | null;
   aspect: number;
 }
 
 interface StageCtxValue {
-  register: (el: HTMLElement, kind: StageKind, type: string) => number;
+  register: (el: HTMLElement, kind: StageKind, type: string, large?: boolean) => number;
   unregister: (id: number) => void;
   enabled: boolean;
 }
@@ -38,10 +39,10 @@ const StageCtx = createContext<StageCtxValue>({
   enabled: false,
 });
 
-function buildScene(kind: StageKind, type: string, low: boolean): ViewScene {
+function buildScene(kind: StageKind, type: string, low: boolean, large = false): ViewScene {
   if (kind === 'hero') return createHeroScene(low);
   if (kind === 'skill') return createSkillScene(type as SkillDomain, low);
-  return createCardScene(type as VisualType, low);
+  return createCardScene(type as VisualType, low, large);
 }
 
 export function StageProvider({
@@ -60,9 +61,9 @@ export function StageProvider({
   const pointerRef = useRef<Pointer>({ x: 0, y: 0 });
 
   const register = useCallback(
-    (el: HTMLElement, kind: StageKind, type: string): number => {
+    (el: HTMLElement, kind: StageKind, type: string, large = false): number => {
       const id = ++idRef.current;
-      viewsRef.current.set(id, { id, el, kind, type, scene: null, aspect: 0 });
+      viewsRef.current.set(id, { id, el, kind, type, large, scene: null, aspect: 0 });
       return id;
     },
     [],
@@ -86,7 +87,7 @@ export function StageProvider({
     }
     viewsRef.current.forEach((rec) => {
       rec.scene?.dispose();
-      rec.scene = buildScene(rec.kind, rec.type, low);
+      rec.scene = buildScene(rec.kind, rec.type, low, rec.large);
       rec.aspect = 0;
     });
   }, [low, enabled]);
@@ -134,7 +135,7 @@ export function StageProvider({
       renderer.clear();
 
       viewsRef.current.forEach((rec) => {
-        if (!rec.scene) rec.scene = buildScene(rec.kind, rec.type, lowRef.current);
+        if (!rec.scene) rec.scene = buildScene(rec.kind, rec.type, lowRef.current, rec.large);
         const r = rec.el.getBoundingClientRect();
         if (r.width < 4 || r.height < 4 || r.bottom < 0 || r.top > H || r.right < 0 || r.left > W) return;
         const aspect = r.width / r.height;
@@ -185,11 +186,13 @@ export function StageProvider({
 export function StageView({
   kind,
   type,
+  large,
   className,
   style,
 }: {
   kind: StageKind;
   type: string;
+  large?: boolean;
   className?: string;
   style?: React.CSSProperties;
 }) {
@@ -197,12 +200,14 @@ export function StageView({
   const ref = useRef<HTMLDivElement>(null);
   const kindRef = useRef(kind);
   const typeRef = useRef(type);
+  const largeRef = useRef(large);
   kindRef.current = kind;
   typeRef.current = type;
+  largeRef.current = large;
 
   useEffect(() => {
     if (!enabled || !ref.current) return;
-    const id = register(ref.current, kindRef.current, typeRef.current);
+    const id = register(ref.current, kindRef.current, typeRef.current, largeRef.current);
     return () => unregister(id);
   }, [enabled, register, unregister]);
 

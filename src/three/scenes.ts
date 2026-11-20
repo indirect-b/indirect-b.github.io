@@ -163,8 +163,8 @@ const BG_FRAG = /* glsl */ `
   }
 `;
 
-export const BG_COUNT = 5000;
-export const BG_COUNT_LOW = 1200;
+export const BG_COUNT = 3000;
+export const BG_COUNT_LOW = 600;
 
 export function createBackgroundScene(): ViewScene {
   const scene = new THREE.Scene();
@@ -346,18 +346,24 @@ function finishCard(
 export function createCardScene(type: VisualType, low: boolean, large = false): ViewScene {
   const base = cardBase(low);
   const { group } = base;
-  if (large) group.scale.setScalar(1.35);
+  if (large) {
+    // Wide (2-column) cards are ~3.5:1 — bring the camera in and scale the
+    // scene up so the object fills the frame instead of a small dark box.
+    group.scale.setScalar(1.5);
+    base.camera.position.z = 4.2;
+  }
 
   if (type === 'distributed') {
     // Post-quantum diamond: wireframe octahedron core + orbiting key nodes.
+    // Bright, large and solid — this is the featured chat-app card.
     const core = new THREE.Mesh(
-      new THREE.OctahedronGeometry(0.85, 0),
-      new THREE.MeshBasicMaterial({ color: CYAN, wireframe: true, transparent: true, opacity: 0.85 }),
+      new THREE.OctahedronGeometry(1.0, 0),
+      new THREE.MeshBasicMaterial({ color: CYAN, wireframe: true, transparent: true, opacity: 1 }),
     );
     group.add(core);
-    const inner = new THREE.Mesh(new THREE.OctahedronGeometry(0.45, 0), std(0x0aa8c0, { metalness: 0.9, roughness: 0.2, emissive: 0x003a44, emissiveIntensity: 1 }));
+    const inner = new THREE.Mesh(new THREE.OctahedronGeometry(0.58, 0), std(0x0aa8c0, { metalness: 0.9, roughness: 0.2, emissive: 0x006a7a, emissiveIntensity: 1.6 }));
     group.add(inner);
-    const nodeGeo = new THREE.SphereGeometry(0.11, 12, 12);
+    const nodeGeo = new THREE.SphereGeometry(0.14, 12, 12);
     const nodeMat = std(0xffffff, { metalness: 0.4, roughness: 0.3, emissive: CYAN, emissiveIntensity: 0.7 });
     const nodes: THREE.Mesh[] = [];
     const linePos: number[] = [];
