@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>آزمایشگاه پژوهش‌ها و نمونه‌های اولیه | Mohammad Taha Azizi Ahad — The Lab</title>
+    <meta name="description" content="آزمایشگاه پژوهشی، نمونه‌های اولیه رمزنگاری پساکوانتوم، مهندسی معکوس و هوش مصنوعی محمد طاها عزیزی احد">
+    <link rel="canonical" href="https://indirect-b.is-a.dev/lab">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background: #060709;
+            color: #e4e7eb;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 32px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            backdrop-filter: blur(12px);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: rgba(6,7,9,0.85);
+        }
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            color: #fff;
+            text-decoration: none;
+        }
+        .brand-badge {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #00e5ff;
+        }
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+        .nav-link {
+            color: #8b949e;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+        .nav-link:hover { color: #fff; }
+        .back-btn {
+            background: rgba(0, 229, 255, 0.1);
+            color: #00e5ff;
+            border: 1px solid rgba(0, 229, 255, 0.3);
+            padding: 8px 16px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+        .back-btn:hover {
+            background: rgba(0, 229, 255, 0.2);
+            box-shadow: 0 0 15px rgba(0, 229, 255, 0.2);
+        }
+        .hero {
+            padding: 80px 32px 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .hero-tag {
+            display: inline-block;
+            font-size: 12px;
+            letter-spacing: 0.2em;
+            color: #00e5ff;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+            padding: 4px 12px;
+            background: rgba(0,229,255,0.06);
+            border-radius: 12px;
+            border: 1px solid rgba(0,229,255,0.15);
+        }
+        .hero h1 {
+            font-size: clamp(32px, 5vw, 54px);
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: #ffffff;
+            margin-bottom: 16px;
+        }
+        .hero p {
+            font-size: 18px;
+            color: #8b949e;
+            max-width: 680px;
+            margin: 0 auto;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 24px;
+            max-width: 1200px;
+            margin: 40px auto 80px;
+            padding: 0 32px;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(0, 229, 255, 0.4);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 229, 255, 0.1);
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+        .card-tag {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #00e5ff;
+            background: rgba(0, 229, 255, 0.08);
+            padding: 4px 10px;
+            border-radius: 8px;
+        }
+        .card-date {
+            font-size: 12px;
+            color: #555e69;
+        }
+        .card h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+        .card p {
+            font-size: 14px;
+            color: #8b949e;
+            margin-bottom: 20px;
+            flex-grow: 1;
+        }
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding-top: 16px;
+        }
+        .card-link {
+            color: #00e5ff;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .card-link:hover { text-decoration: underline; }
+        .card-status {
+            font-size: 11px;
+            color: #3fb950;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #3fb950;
+            box-shadow: 0 0 8px #3fb950;
+        }
+        footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 40px 32px;
+            text-align: center;
+            font-size: 13px;
+            color: #555e69;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="/" class="brand">
+            <div class="brand-badge">M</div>
+            <span>INDIRECT LAB // 2026</span>
+        </a>
+        <div class="nav-links">
+            <a href="https://github.com/indirect-b" target="_blank" class="nav-link">GitHub</a>
+            <a href="https://dev.to/indirectb" target="_blank" class="nav-link">DEV.to</a>
+            <a href="/" class="back-btn">
+                <span>بازگشت به تجربه سه‌بعدی</span>
+                <span>←</span>
+            </a>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="hero-tag">// EXPERIMENTAL PROTOTYPES & LAB</div>
+            <h1>آزمایشگاه تحقیقات و پروتوتایپ‌ها</h1>
+            <p>فضای توسعه و آزمون نمونه‌های اولیه در حوزه‌های رمزنگاری پساکوانتوم، هوش مصنوعی، بایت‌کد اندروید و سیستم‌های توزیع‌شده.</p>
+        </section>
+
+        <section class="grid">
+            <!-- Exp 1 -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-tag">Post-Quantum Crypto</span>
+                    <span class="card-date">2026</span>
+                </div>
+                <h2>ratchet-pq // ML-KEM-768 + ECDH</h2>
+                <p>پیاده‌سازی پروتکل نشست رمزنگاری دوگانه مقاوم در برابر حملات کوانتومی با ترکیب الگوریتم ML-KEM-768 و منحنی P-256 همراه با پاکسازی عمیق حافظه رم.</p>
+                <div class="card-footer">
+                    <span class="card-status"><span class="status-dot"></span>فعال در chat-app</span>
+                    <a href="https://github.com/indirect-b/chat-app" target="_blank" class="card-link">مشاهده سورس ↗</a>
+                </div>
+            </div>
+
+            <!-- Exp 2 -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-tag">Zero-Knowledge</span>
+                    <span class="card-date">RFC 9497</span>
+                </div>
+                <h2>VOPRF // Ristretto255 Blinded Tokens</h2>
+                <p>موتور صدور توکن‌های احراز هویت ناشناس با استفاده از توابع شبه‌تصادفی کورشده جهت جلوگیری از ردیابی هویت کاربران در سرورهای پیام‌رسان.</p>
+                <div class="card-footer">
+                    <span class="card-status"><span class="status-dot"></span>عملیاتی</span>
+                    <a href="https://dev.to/indirectb" target="_blank" class="card-link">مقاله تحلیلی ↗</a>
+                </div>
+            </div>
+
+            <!-- Exp 3 -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-tag">AI & Android</span>
+                    <span class="card-date">MEXT</span>
+                </div>
+                <h2>ACE Code Editor // AI Assistant</h2>
+                <p>ویرایشگر کدهای اندروید با Jetpack Compose M3، موتور هایلایت نحوی و دستیار هوشمند محلی متصل به مدل‌های جمینای برای تحلیل سورس‌کد.</p>
+                <div class="card-footer">
+                    <span class="card-status"><span class="status-dot"></span>نمونه اولیه</span>
+                    <a href="https://github.com/indirect-b" target="_blank" class="card-link">مشاهده مخزن ↗</a>
+                </div>
+            </div>
+
+            <!-- Exp 4 -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-tag">Reverse Engineering</span>
+                    <span class="card-date">DEX / Smali</span>
+                </div>
+                <h2>canada-vpn // Multi-DEX Tunneling</h2>
+                <p>تحلیل ساختار بسته‌های بایت‌کد اندروید، دیکامپایل چندکلاسه و بهینه‌سازی سرویس‌های تونلینگ VpnService برای ارتباط پایدار شبکه.</p>
+                <div class="card-footer">
+                    <span class="card-status"><span class="status-dot"></span>تست شده</span>
+                    <a href="https://github.com/indirect-b/canada-vpn" target="_blank" class="card-link">مستندات بسته ↗</a>
+                </div>
+            </div>
+
+            <!-- Exp 5 -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-tag">Formal Verification</span>
+                    <span class="card-date">ProVerif</span>
+                </div>
+                <h2>Double Ratchet Formal Modeling</h2>
+                <p>مدل‌سازی ریاضی حالات پروتکل سیگنال و اعتبارسنجی مقاومت نشست‌ها در برابر حملات جعل کلید، تحلیل کانال جانبی و نشت کلید پیشین.</p>
+                <div class="card-footer">
+                    <span class="card-status"><span class="status-dot"></span>تأیید ریاضی</span>
+                    <a href="https://dev.to/indirectb" target="_blank" class="card-link">مطالعه در DEV ↗</a>
+                </div>
+            </div>
+
+            <!-- Exp 6 -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-tag">CI/CD Automation</span>
+                    <span class="card-date">Cloud Matrix</span>
+                </div>
+                <h2>Automated APK Build Pipelines</h2>
+                <p>خط لوله بیلد ابری مستقل با GitHub Actions جهت تست، کامپایل و امضای خودکار بسته‌های نصبی اندروید بدون نیاز به ابزارهای لوکال.</p>
+                <div class="card-footer">
+                    <span class="card-status"><span class="status-dot"></span>آنلاین</span>
+                    <a href="https://github.com/indirect-b" target="_blank" class="card-link">اکشن‌های بیلد ↗</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2026 Mohammad Taha Azizi Ahad (indirect-b) — تمام پژوهش‌ها و کدهای آزمایشگاه تحت لیسانس متن‌باز منتشر شده‌اند.</p>
+    </footer>
+</body>
+</html>
