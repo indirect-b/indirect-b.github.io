@@ -56,6 +56,52 @@ import {
   Globe,
 } from 'lucide-react';
 
+/**
+ * Distinct 3D scene per repo the GitHub API appends — the old code gave
+ * every appended repo the generic 'edge-kv' bar chart, so half the grid
+ * showed the same graphic. Maps by name/language so each card reads as
+ * a different object.
+ */
+function visualTypeForRepo(
+  name: string,
+  language: string | null,
+): ProjectItem['visualType'] {
+  const n = name.toLowerCase();
+  if (
+    n.includes('aether') ||
+    n.includes('webgl') ||
+    n.includes('mprba') ||
+    n.includes('quantum') ||
+    n.includes('pq-')
+  )
+    return 'distributed';
+  if (
+    n.includes('payment') ||
+    n.includes('tusd') ||
+    n.includes('vpn') ||
+    n.includes('tunnel') ||
+    n.includes('aevum')
+  )
+    return 'vector';
+  if (
+    n.includes('camera') ||
+    n.includes('photo') ||
+    n.includes('music') ||
+    n.includes('audio')
+  )
+    return 'wasm-audio';
+  if (
+    n.includes('eta') ||
+    n.includes('editor') ||
+    n.includes('register') ||
+    n.includes('code')
+  )
+    return 'compiler';
+  if (language === 'Kotlin' || language === 'Java') return 'compiler';
+  if (language === 'TypeScript' || language === 'JavaScript') return 'distributed';
+  return 'edge-kv';
+}
+
 export default function App() {
   // Start with immediate timezone/navigator hint, then refine automatically via Geo-IP
   const [locale, setLocale] = useState<SupportedLocale>(() => {
@@ -214,7 +260,7 @@ export default function App() {
                     `Repository Size: ${r.size || 0} KB`,
                   ],
                   codeSnippet: `git clone ${r.clone_url}`,
-                  visualType: 'edge-kv',
+                  visualType: visualTypeForRepo(r.name, r.language),
                 });
               }
             }
@@ -248,14 +294,15 @@ export default function App() {
     [baseConfig, locale]
   );
 
-  // Live repo count in the KPI: "9 مخزن عمومی" → "16 مخزن عمومی" etc.
-  // Works for all 8 locales — only the leading number is replaced.
+  // Live repo count in the KPI: it counts exactly the repositories the
+  // site displays (same source as the grid counter), so the two numbers
+  // always agree — the GitHub account total (which flickered 15/16 via
+  // the API) is deliberately NOT used here.
   const kpiReposText = useMemo(() => {
     const raw = t.kpiReposValue;
-    const count = baseConfig.publicRepos;
-    if (!count) return raw;
+    const count = rawProjects.length;
     return raw.replace(/^\d+/, String(count));
-  }, [t.kpiReposValue, baseConfig.publicRepos]);
+  }, [t.kpiReposValue, rawProjects.length]);
 
   const localizedProjects = useMemo(
     () => rawProjects.map((p) => getLocalizedProject(p, locale)),
@@ -352,11 +399,11 @@ export default function App() {
             : 'bg-[#050505]/90 border-cyan-500/30'
         }`}
       >
-        <div className="max-w-[1240px] mx-auto flex items-center justify-between gap-8 px-6 py-4">
+        <div className="max-w-[1240px] mx-auto flex items-center justify-between gap-3 sm:gap-8 px-4 sm:px-6 py-3 sm:py-4">
           {/* Zone 1: Brand Title, single text element */}
           <a
             href="#top"
-            className="text-lg font-bold tracking-tight font-display whitespace-nowrap shrink-0"
+            className="text-base sm:text-lg font-bold tracking-tight font-display truncate min-w-0 max-w-[38vw] sm:max-w-none shrink-0"
           >
             {siteConfig.fullName}
           </a>
@@ -392,7 +439,7 @@ export default function App() {
           </nav>
 
           {/* Zone 3: mode switcher + Low toggle + 1 primary action */}
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             {/* Active Theory-style mode switcher: CLASSIC <-> QUANTUM */}
             <div
               className="hidden sm:flex items-center rounded-full border border-zinc-700/80 bg-zinc-900/80 p-0.5 font-mono text-[11px]"
@@ -428,7 +475,7 @@ export default function App() {
               onClick={() => setLowQ((v) => !v)}
               title="Low quality — lighter 3D for weak GPUs"
               aria-pressed={lowQ}
-              className={`px-2.5 py-1.5 text-[11px] font-mono rounded-full border transition-colors whitespace-nowrap ${
+              className={`px-2 sm:px-2.5 py-1.5 text-[11px] font-mono rounded-full border transition-colors whitespace-nowrap ${
                 lowQ
                   ? 'bg-amber-300 text-black border-amber-300 font-semibold'
                   : 'border-zinc-700 text-zinc-400 hover:text-zinc-100'
@@ -440,10 +487,11 @@ export default function App() {
               href={`https://github.com/${baseConfig.githubUsername}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="px-4 py-2 text-xs font-medium text-black bg-[#00e5ff] cp-cut rounded-lg hover:bg-cyan-300 transition-colors whitespace-nowrap shrink-0 font-mono"
+              className="px-2.5 sm:px-4 py-2 text-xs font-medium text-black bg-[#00e5ff] cp-cut rounded-lg hover:bg-cyan-300 transition-colors whitespace-nowrap shrink-0 font-mono"
               dir="ltr"
             >
-              github.com/{baseConfig.githubUsername}
+              <span className="hidden sm:inline">github.com/{baseConfig.githubUsername}</span>
+              <span className="sm:hidden">GitHub</span>
             </a>
           </div>
         </div>
@@ -644,7 +692,7 @@ export default function App() {
             }`}
           >
             <div>
-              <div className="text-2xl lg:text-3xl font-bold font-mono tabular-nums">
+              <div className="text-lg sm:text-xl lg:text-2xl font-bold font-mono tabular-nums whitespace-nowrap">
                 <CountUp value={kpiReposText} />
               </div>
               <div
@@ -656,7 +704,7 @@ export default function App() {
               </div>
             </div>
             <div>
-              <div className="text-2xl lg:text-3xl font-bold font-mono tabular-nums" dir="ltr">
+              <div className="text-lg sm:text-xl lg:text-2xl font-bold font-mono tabular-nums whitespace-nowrap" dir="ltr">
                 Kotlin &amp; Compose
               </div>
               <div
@@ -668,7 +716,7 @@ export default function App() {
               </div>
             </div>
             <div>
-              <div className="text-2xl lg:text-3xl font-bold font-mono tabular-nums" dir="ltr">
+              <div className="text-lg sm:text-xl lg:text-2xl font-bold font-mono tabular-nums whitespace-nowrap" dir="ltr">
                 ML-KEM-768
               </div>
               <div
@@ -680,8 +728,8 @@ export default function App() {
               </div>
             </div>
             <div>
-              <div className="text-2xl lg:text-3xl font-bold font-mono tabular-nums" dir="ltr">
-                Gemini AI &amp; CI
+              <div className="text-lg sm:text-xl lg:text-2xl font-bold font-mono tabular-nums whitespace-nowrap" dir="ltr">
+                Gemini AI &amp; CI/CD
               </div>
               <div
                 className={`text-xs mt-1 ${
@@ -715,7 +763,7 @@ export default function App() {
       </div>
 
       {/* Section 01: Bento Grid of Real GitHub Projects */}
-      <section id="projects" className="max-w-[1240px] mx-auto px-6 py-16 lg:py-24">
+      <section id="projects" className="max-w-[1240px] mx-auto px-6 py-12 lg:py-16 scroll-mt-24">
         <Reveal>
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
           <div>
@@ -855,6 +903,7 @@ export default function App() {
                     {siteMode === 'quantum' ? (
                       <CardArtwork3D
                         type={project.visualType}
+                        large={isWide}
                         className="h-48 sm:h-56 q3d-art"
                       />
                     ) : (
@@ -892,12 +941,17 @@ export default function App() {
                         {project.title}
                       </h3>
 
-                      <p
-                        className="text-xs font-mono text-zinc-500 mb-3"
-                        dir="ltr"
-                      >
-                        {project.subtitle}
-                      </p>
+                      {/* Subtitle is the English line; hide it when it merely
+                          duplicates the summary (appended repos reuse the
+                          GitHub description for both). */}
+                      {project.subtitle !== project.summary && (
+                        <p
+                          className="text-xs font-mono text-zinc-500 mb-3"
+                          dir="ltr"
+                        >
+                          {project.subtitle}
+                        </p>
+                      )}
 
                       <p
                         className={`text-sm leading-relaxed ${
@@ -910,13 +964,13 @@ export default function App() {
                   </div>
 
                   <div
-                    className={`px-6 py-4 border-t flex items-center justify-between text-xs ${siteMode === 'quantum' ? 'q3d-foot ' : ''}${
+                    className={`px-6 py-4 border-t flex items-center justify-between gap-3 text-xs ${siteMode === 'quantum' ? 'q3d-foot ' : ''}${
                       isLightPaper
                         ? 'border-zinc-100 text-zinc-600'
                         : 'border-zinc-800/70 text-zinc-400'
                     }`}
                   >
-                    <span className="font-mono" dir="ltr">
+                    <span className="font-mono break-all min-w-0" dir="ltr">
                       indirect-b/{project.slug}
                     </span>
                     <span className="inline-flex items-center gap-1 font-medium text-[#00e5ff]">
@@ -939,8 +993,10 @@ export default function App() {
       {/* Section 02: Technical Stack & Domain Expertise */}
       <section
         id="skills"
-        className={`border-t py-16 lg:py-24 ${
-          isLightPaper ? 'border-zinc-200' : 'border-zinc-800/80'
+        className={`border-t py-12 lg:py-16 scroll-mt-24 ${
+          isLightPaper
+            ? 'border-zinc-200 bg-zinc-100/70'
+            : 'border-zinc-800/80 bg-zinc-950/50'
         }`}
       >
         <div className="max-w-[1240px] mx-auto px-6">
@@ -1048,7 +1104,7 @@ export default function App() {
       {isJekyllDrawerOpen && (
         <section
           id="jekyll-studio"
-          className={`border-y py-16 ${
+          className={`border-y py-16 scroll-mt-24 ${
             isLightPaper
               ? 'bg-zinc-100/80 border-zinc-200'
               : 'bg-[#08080A] border-zinc-800/80'
@@ -1166,7 +1222,7 @@ export default function App() {
       {/* Section 03: Contact & Collaboration */}
       <section
         id="contact"
-        className={`border-t py-16 lg:py-20 ${
+        className={`border-t py-16 lg:py-20 scroll-mt-24 ${
           isLightPaper ? 'border-zinc-200' : 'border-zinc-800/80'
         }`}
       >
@@ -1273,7 +1329,7 @@ export default function App() {
                   {activeProjectModal.language}
                 </span>
                 <span>·</span>
-                <span className="font-mono" dir="ltr">
+                <span className="font-mono break-all" dir="ltr">
                   indirect-b/{activeProjectModal.slug}
                 </span>
               </div>
@@ -1292,9 +1348,11 @@ export default function App() {
                 <h2 className="text-2xl sm:text-3xl font-bold mb-1">
                   {activeProjectModal.title}
                 </h2>
-                <p className="text-sm font-mono text-zinc-400" dir="ltr">
-                  {activeProjectModal.subtitle}
-                </p>
+                {activeProjectModal.subtitle !== activeProjectModal.summary && (
+                  <p className="text-sm font-mono text-zinc-400" dir="ltr">
+                    {activeProjectModal.subtitle}
+                  </p>
+                )}
               </div>
 
               {siteMode === 'quantum' ? (
