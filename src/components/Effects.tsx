@@ -150,7 +150,7 @@ export function Reveal({
       className={className}
       initial={{ opacity: 0, y: 26 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-60px' }}
+      viewport={{ once: true, margin: '0px' }}
       transition={{ duration: 0.65, delay, ease: 'easeOut' }}
     >
       {children}
@@ -204,35 +204,32 @@ export function Tilt({
   );
 }
 
-/** Typing effect cycling through tech keywords. */
+/** Rotating tech keywords — whole words only. The full word is held,
+ *  then it fades out, swaps to the next whole word, and fades back in,
+ *  so a partial word ("Androi", "Post-Quant") is never rendered. */
 export function Typewriter({ words }: { words: string[] }) {
-  const [text, setText] = useState(words[0]);
-  const [wordIdx, setWordIdx] = useState(0);
-  const [deleting, setDeleting] = useState(false);
+  const [idx, setIdx] = useState(0);
+  const [opacity, setOpacity] = useState(1);
 
   useEffect(() => {
     if (prefersReducedMotion()) return;
-    const word = words[wordIdx % words.length];
-    let timeout: ReturnType<typeof setTimeout>;
-    if (!deleting && text === word) {
-      timeout = setTimeout(() => setDeleting(true), 1500);
-    } else if (deleting && text === '') {
-      setDeleting(false);
-      setWordIdx((i) => (i + 1) % words.length);
-    } else {
-      timeout = setTimeout(
-        () => {
-          setText(word.slice(0, text.length + (deleting ? -1 : 1)));
-        },
-        deleting ? 45 : 95,
-      );
-    }
-    return () => clearTimeout(timeout);
-  }, [text, deleting, wordIdx, words]);
+    let t1: ReturnType<typeof setTimeout>;
+    let t2: ReturnType<typeof setTimeout>;
+    // Hold the complete word, then fade out and swap while invisible.
+    t1 = setTimeout(() => setOpacity(0), 1800);
+    t2 = setTimeout(() => {
+      setIdx((i) => (i + 1) % words.length);
+      setOpacity(1);
+    }, 2150);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
+  }, [idx, words]);
 
   return (
-    <span>
-      {text}
+    <span className="transition-opacity duration-300" style={{ opacity }}>
+      {words[idx % words.length]}
       <span className="fx-caret ms-0.5 inline-block h-4 w-[2px] translate-y-0.5 bg-[#00e5ff]" />
     </span>
   );

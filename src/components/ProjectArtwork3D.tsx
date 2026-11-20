@@ -14,15 +14,18 @@ export type SkillDomain = 'android' | 'crypto' | 'ai';
 /** Card artwork: live 3D diagram in place of the flat SVG. */
 export function CardArtwork3D({
   type,
+  large,
   className,
 }: {
   type: VisualType;
+  large?: boolean;
   className?: string;
 }) {
   return (
     <StageView
       kind="card"
       type={type}
+      large={large}
       className={`relative w-full bg-[#0B0B0E] ${className ?? ''}`}
     />
   );
