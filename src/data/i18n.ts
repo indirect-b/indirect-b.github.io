@@ -92,12 +92,12 @@ export interface LocaleDictionary {
 export const TRANSLATIONS: Record<SupportedLocale, LocaleDictionary> = {
   fa: {
     fullName: 'محمد طاها عزیزی احد',
-    roleTitle: 'توسعه‌دهنده موبایل (Android / Kotlin) و کاربر لینوکس · اتوماسیون هوش مصنوعی',
+    roleTitle: 'توسعه‌دهنده موبایل \u2066(Android / Kotlin)\u2069 و کاربر لینوکس · اتوماسیون هوش مصنوعی',
     location: 'ایران · اکوسیستم لینوکس و اندروید',
     bioHeadline:
-      'توسعه‌دهنده اپلیکیشن‌های بومی اندروید (Kotlin & Compose)، سیستم‌های رمزنگاری وب و اتوماسیون هوش مصنوعی.',
+      'توسعه‌دهنده اپلیکیشن‌های بومی اندروید \u2066(Kotlin & Compose)\u2069، سیستم‌های رمزنگاری وب و اتوماسیون هوش مصنوعی.',
     bioLead:
-      'تمرکز اصلی من بر طراحی و مهندسی نرم‌افزارهای بومی اندروید با معماری Clean + MVVM، بهینه‌سازی مصرف منابع در دستگاه‌های موبایل، پیام‌رسان‌های بلادرنگ با رمزنگاری پسا-کوانتومی و اتوماسیون بیلد در محیط لینوکس و GitHub Actions است.',
+      'تمرکز اصلی من بر طراحی و مهندسی نرم‌افزارهای بومی اندروید با معماری \u2066Clean + MVVM\u2069، بهینه‌سازی مصرف منابع در دستگاه‌های موبایل، پیام‌رسان‌های بلادرنگ با رمزنگاری پسا-کوانتومی و اتوماسیون بیلد در محیط لینوکس و GitHub Actions است.',
     navProjects: 'پروژه‌ها',
     navSkills: 'تخصص‌ها',
     navLiveMessenger: 'دموی پیام‌رسان',
@@ -110,12 +110,12 @@ export const TRANSLATIONS: Record<SupportedLocale, LocaleDictionary> = {
     geoDetectedLabel: 'زبان بر اساس IP تنظیم شد',
     kpiReposValue: '9 مخزن عمومی',
     kpiReposDesc: 'پروژه‌های متن‌باز در حساب github.com/indirect-b',
-    kpiAndroidDesc: 'توسعه اپلیکیشن‌های بومی اندروید با معماری Clean + MVVM و Room DB',
-    kpiCryptoDesc: 'موتور رمزنگاری ترکیبی پسا-کوانتومی (FIPS 203) و VOPRF در وب',
+    kpiAndroidDesc: 'توسعه اپلیکیشن‌های بومی اندروید با معماری \u2066Clean + MVVM\u2069 و Room DB',
+    kpiCryptoDesc: 'موتور رمزنگاری ترکیبی پسا-کوانتومی \u2066(FIPS 203)\u2069 و VOPRF در وب',
     kpiAiDesc: 'ایجنت‌های هوشمند کدنویسی و اتوماسیون بیلد ابری در محیط لینوکس',
     section1Title: '01. گزیده پروژه‌ها و مخازن مهندسی نرم‌افزار',
     section1Desc: 'برای مشاهده معماری سیستم، ویژگی‌های فنی و تکه کدهای هر پروژه روی کارت آن کلیک کنید.',
-    searchPlaceholder: 'جستجو در پروژه‌ها (مثلاً Kotlin)...',
+    searchPlaceholder: 'جستجو در پروژه‌ها \u2066(مثلاً Kotlin)\u2069...',
     syncGithubBtn: 'بروزرسانی از GitHub',
     syncSuccessMsg: 'اطلاعات مخازن با آخرین وضعیت گیت‌هاب همگام‌سازی شد.',
     filterAll: 'همه پروژه‌ها',
@@ -127,14 +127,14 @@ export const TRANSLATIONS: Record<SupportedLocale, LocaleDictionary> = {
     noProjectsFound: 'هیچ پروژه‌ای با عبارت جستجو شده یافت نشد.',
     resetFilters: 'بازنشانی فیلترها',
     cardInspectBtn: 'بررسی معماری و کد',
-    section2Title: '02. حوزه‌های تخصصی و پشته فنی (Tech Stack)',
+    section2Title: '02. حوزه‌های تخصصی و پشته فنی \u2066(Tech Stack)\u2069',
     section2Desc: 'معماری‌ها، زبان‌ها و ابزارهای مهندسی مورد استفاده در پروژه‌های من',
     skill1Title: 'توسعه اپلیکیشن‌های بومی اندروید',
     skill1Desc:
-      'طراحی رابط کاربری مدرن با Jetpack Compose (Material 3)، معماری Clean + MVVM، پایگاه داده محلی Room، بهینه‌سازی مصرف حافظه و مهندسی معکوس بسته‌های Smali / APK.',
+      'طراحی رابط کاربری مدرن با Jetpack Compose \u2066(Material 3)\u2069، معماری \u2066Clean + MVVM\u2069، پایگاه داده محلی Room، بهینه‌سازی مصرف حافظه و مهندسی معکوس بسته‌های Smali / APK.',
     skill2Title: 'سیستم‌های بلادرنگ و رمزنگاری پیشرفته',
     skill2Desc:
-      'پیاده‌سازی پیام‌رسان‌های بلادرنگ با Socket.IO و Express، تبادل کلید پسا-کوانتومی (ML-KEM-768 + ECDH P-256) و احراز هویت ناشناس مبتنی بر VOPRF.',
+      'پیاده‌سازی پیام‌رسان‌های بلادرنگ با Socket.IO و Express، تبادل کلید پسا-کوانتومی \u2066(ML-KEM-768 + ECDH P-256)\u2069 و احراز هویت ناشناس مبتنی بر VOPRF.',
     skill3Title: 'اتوماسیون هوش مصنوعی و محیط لینوکس',
     skill3Desc:
       'یکپارچه‌سازی Google Gemini API با قابلیت Grounded Web Search، پردازش اسناد OpenXML و اتوماسیون کامپایل ابری اندروید با GitHub Actions.',
@@ -147,7 +147,7 @@ export const TRANSLATIONS: Record<SupportedLocale, LocaleDictionary> = {
     contactTitle: 'همکاری در پروژه‌های اندروید، سیستم‌های امن وب و هوش مصنوعی',
     contactDesc:
       'برای مشاهده سورس کامل پروژه‌ها، بررسی مستندات فنی یا ارتباط مستقیم می‌توانید به صفحه گیت‌هاب من مراجعه کنید.',
-    footerCopyright: '© ۲۰۲۶ محمد طاها عزیزی احد (Mohammad Taha Azizi Ahad). میزبانی شده روی GitHub Pages.',
+    footerCopyright: '© ۲۰۲۶ محمد طاها عزیزی احد \u2066(Mohammad Taha Azizi Ahad)\u2069. میزبانی شده روی GitHub Pages.',
     modalOverviewTitle: 'معرفی و هدف پروژه',
     modalArchTitle: 'معماری و جزئیات فنی',
     modalHighlightsTitle: 'ویژگی‌های شاخص در مخزن گیت‌هاب',
@@ -155,29 +155,29 @@ export const TRANSLATIONS: Record<SupportedLocale, LocaleDictionary> = {
     modalViewLive: 'مشاهده دموی زنده',
     projects: {
       'chat-app': {
-        title: 'پیام‌رسان بلادرنگ فارسی با رمزنگاری پسا-کوانتومی (chat-app v6.5.0)',
+        title: 'پیام‌رسان بلادرنگ فارسی با رمزنگاری پسا-کوانتومی \u2066(chat-app v6.5.0)\u2069',
         categoryLabel: 'امنیت و فول‌استک وب',
         summary:
-          'پیام‌رسان وب بلادرنگ سطح سازمانی توسعه یافته با React 19، TypeScript، Express و Socket.IO مجهز به موتور رمزنگاری ترکیبی پسا-کوانتومی (ML-KEM-768 + ECDH P-256 Ratchet + AES-GCM 256-bit) و احراز هویت ناشناس مبتنی بر Ristretto255-VOPRF (RFC 9497).',
+          'پیام‌رسان وب بلادرنگ سطح سازمانی توسعه یافته با React 19، TypeScript، Express و Socket.IO مجهز به موتور رمزنگاری ترکیبی پسا-کوانتومی \u2066(ML-KEM-768 + ECDH P-256 Ratchet + AES-GCM 256-bit)\u2069 و احراز هویت ناشناس مبتنی بر Ristretto255-VOPRF \u2066(RFC 9497)\u2069.',
         architectureNotes:
-          'مقاوم در برابر حملات کوانتومی Store Now, Decrypt Later با ترکیب الگوریتم استاندارد NIST CRYSTALS-Kyber و ECDH در زنجیره HKDF-SHA256، مدیریت بسته‌های خارج از نوبت و پاک‌سازی فوری حافظه RAM (Zeroization).',
+          'مقاوم در برابر حملات کوانتومی Store Now, Decrypt Later با ترکیب الگوریتم استاندارد NIST CRYSTALS-Kyber و ECDH در زنجیره HKDF-SHA256، مدیریت بسته‌های خارج از نوبت و پاک‌سازی فوری حافظه RAM \u2066(Zeroization)\u2069.',
         highlights: [
-          'رمزنگاری سرتاسری پسا-کوانتومی ترکیبی (ML-KEM-768 / FIPS 203 + ECDH P-256)',
-          'احراز هویت کور شده (Blinded Identity Authentication) بر پایه استاندارد RFC 9497 VOPRF',
-          'ماشین وضعیت اتمیک برای مدیریت کلیدهای گروهی (Atomic Group Epoch FSM)',
-          'پاک‌سازی آنی کلیدهای موقت در حافظه (zeroizeBuffer) و دیتابیس دوگانه PostgreSQL / Disk Fallback',
+          'رمزنگاری سرتاسری پسا-کوانتومی ترکیبی \u2066(ML-KEM-768 / FIPS 203 + ECDH P-256)\u2069',
+          'احراز هویت کور شده \u2066(Blinded Identity Authentication)\u2069 بر پایه استاندارد RFC 9497 VOPRF',
+          'ماشین وضعیت اتمیک برای مدیریت کلیدهای گروهی \u2066(Atomic Group Epoch FSM)\u2069',
+          'پاک‌سازی آنی کلیدهای موقت در حافظه \u2066(zeroizeBuffer)\u2069 و دیتابیس دوگانه PostgreSQL / Disk Fallback',
         ],
       },
       'ace-code-editor': {
-        title: 'ویرایشگر کد و دستیار هوشمند اندروید (ACE AI Code Editor)',
+        title: 'ویرایشگر کد و دستیار هوشمند اندروید \u2066(ACE AI Code Editor)\u2069',
         categoryLabel: 'هوش مصنوعی و موبایل',
         summary:
-          'استودیوی کدنویسی و دستیار هوش مصنوعی بومی اندروید ساخته شده با Kotlin 1.9+، Jetpack Compose (Material 3) و معماری Clean + MVVM همراه با پایگاه داده Room و موتور Google Gemini API.',
+          'استودیوی کدنویسی و دستیار هوش مصنوعی بومی اندروید ساخته شده با Kotlin 1.9+، Jetpack Compose \u2066(Material 3)\u2069 و معماری \u2066Clean + MVVM\u2069 همراه با پایگاه داده Room و موتور Google Gemini API.',
         architectureNotes:
-          'طراحی شده به عنوان پروژه پژوهشی با تمرکز بر بهینه‌سازی مصرف منابع در دستگاه‌های موبایل، پارسر فوق‌سبک اسناد OpenXML (Word/PDF/Code)، جستجوی وب زنده با ارجاع به منابع و موتور تقویم سه‌گانه.',
+          'طراحی شده به عنوان پروژه پژوهشی با تمرکز بر بهینه‌سازی مصرف منابع در دستگاه‌های موبایل، پارسر فوق‌سبک اسناد OpenXML \u2066(Word/PDF/Code)\u2069، جستجوی وب زنده با ارجاع به منابع و موتور تقویم سه‌گانه.',
         highlights: [
-          'معماری بومی اندروید با Kotlin، Jetpack Compose M3، دیتابیس Room و الگوی Clean + MVVM',
-          'تحلیل چندفرمتی اسناد (PDF / Word OpenXML / سورس کد) مستقیماً روی موبایل با مصرف حداقل رم',
+          'معماری بومی اندروید با Kotlin، Jetpack Compose M3، دیتابیس Room و الگوی \u2066Clean + MVVM\u2069',
+          'تحلیل چندفرمتی اسناد \u2066(PDF / Word OpenXML / سورس کد)\u2069 مستقیماً روی موبایل با مصرف حداقل رم',
           'جستجوی زنده وب با ارجاع چندمنبعی به سبک Google AI Overview',
           'موتور محاسبه زمان و تقویم سه‌گانه دقیق (جلالی، هجری قمری و میلادی)',
         ],
@@ -186,31 +186,31 @@ export const TRANSLATIONS: Record<SupportedLocale, LocaleDictionary> = {
         title: 'سامانه جامع مدیریت کلاس‌های قرآن کریم (نور القرآن)',
         categoryLabel: 'اپلیکیشن بومی اندروید',
         summary:
-          'اپلیکیشن بومی (Native) اندروید برای مدیریت هوشمند کلاس‌های حفظ، قرائت و مفاهیم قرآن کریم با ارتباط بلادرنگ (Real-time) میان مدیران، اساتید و قرآن‌آموزان.',
+          'اپلیکیشن بومی \u2066(Native)\u2069 اندروید برای مدیریت هوشمند کلاس‌های حفظ، قرائت و مفاهیم قرآن کریم با ارتباط بلادرنگ \u2066(Real-time)\u2069 میان مدیران، اساتید و قرآن‌آموزان.',
         architectureNotes:
-          'دارای سیستم کنترل دسترسی مبتنی بر نقش (RBAC) برای سه سطح قرآن‌آموز، استاد و مدیر با کدهای فعال‌سازی داینامیک، سامانه تعریف تکلیف بر اساس صفحات ۱ تا ۶۰۴ مصحف و ارسال مستقیم صوت تلاوت.',
+          'دارای سیستم کنترل دسترسی مبتنی بر نقش \u2066(RBAC)\u2069 برای سه سطح قرآن‌آموز، استاد و مدیر با کدهای فعال‌سازی داینامیک، سامانه تعریف تکلیف بر اساس صفحات ۱ تا ۶۰۴ مصحف و ارسال مستقیم صوت تلاوت.',
         highlights: [
-          'تفکیک کامل پنل‌های کاربری: قرآن‌آموز (Student)، استاد (Teacher) و مدیر سامانه (Admin)',
+          'تفکیک کامل پنل‌های کاربری: قرآن‌آموز \u2066(Student)\u2069، استاد \u2066(Teacher)\u2069 و مدیر سامانه \u2066(Admin)\u2069',
           'تعریف تکالیف بر اساس محدوده دقیق صفحات قرآن (۱ تا ۶۰۴) با سوئیچ الزام فایل صوتی',
           'ضبط و پخش صوت قرائت در داخل برنامه همراه با ثبت نمره و بازخورد تجویدی استاد',
           'سیستم پیام‌رسان داخلی دوطرفه و گروه‌های گفتگوی کلاسی بلادرنگ',
         ],
       },
       'canada-vpn': {
-        title: 'کلاینت اتصال امن شبکه و مهندسی بسته اندروید (canada-vpn)',
+        title: 'کلاینت اتصال امن شبکه و مهندسی بسته اندروید \u2066(canada-vpn)\u2069',
         categoryLabel: 'اپلیکیشن بومی اندروید',
         summary:
-          'پروژه کلاینت تونلینگ و مدیریت اتصال امن شبکه روی سیستم‌عامل اندروید شامل ساختار کامل منابع، کتابخانه‌های بومی (Native Libs) و کدهای سطح بایت‌کد Smali و Kotlin.',
+          'پروژه کلاینت تونلینگ و مدیریت اتصال امن شبکه روی سیستم‌عامل اندروید شامل ساختار کامل منابع، کتابخانه‌های بومی \u2066(Native Libs)\u2069 و کدهای سطح بایت‌کد Smali و Kotlin.',
         architectureNotes:
-          'بررسی عمیق ساختار بسته‌های نصبی اندروید (APK)، مدیریت سرویس‌های پس‌زمینه VpnService در AndroidManifest و یکپارچه‌سازی کتابخانه‌های بومی شبکه برای پایداری اتصال.',
+          'بررسی عمیق ساختار بسته‌های نصبی اندروید \u2066(APK)\u2069، مدیریت سرویس‌های پس‌زمینه VpnService در AndroidManifest و یکپارچه‌سازی کتابخانه‌های بومی شبکه برای پایداری اتصال.',
         highlights: [
-          'ساختار کامل پروژه دیکامپایل و بهینه‌سازی شده با پشتیبانی از چند کلاس DEX (Multi-Dex)',
+          'ساختار کامل پروژه دیکامپایل و بهینه‌سازی شده با پشتیبانی از چند کلاس DEX \u2066(Multi-Dex)\u2069',
           'یکپارچه‌سازی لایه‌های Kotlin و کدهای سطح پایین Smali برای مدیریت ترافیک شبکه',
           'تنظیمات اختصاصی AndroidManifest و مدیریت مجوزهای سرویس تونلینگ اندروید',
         ],
       },
       apk: {
-        title: 'اتوماسیون بیلد APK اندروید با GitHub Actions (apk & Apk-generator)',
+        title: 'اتوماسیون بیلد APK اندروید با GitHub Actions \u2066(apk & Apk-generator)\u2069',
         categoryLabel: 'اتوماسیون و لینوکس',
         summary:
           'مجموعه پایپ‌لاین‌ها و اسکریپت‌های ابری برای کامپایل، بیلد و تولید خودکار فایل‌های نصبی APK از مخازن اندروید با استفاده از زیرساخت لینوکسی GitHub Actions.',
@@ -223,10 +223,10 @@ export const TRANSLATIONS: Record<SupportedLocale, LocaleDictionary> = {
         ],
       },
       SimpMusic: {
-        title: 'مشارکت‌ها و مخازن فورک شده (SimpMusic & Agent Skills)',
+        title: 'مشارکت‌ها و مخازن فورک شده \u2066(SimpMusic & Agent Skills)\u2069',
         categoryLabel: 'هوش مصنوعی و موبایل',
         summary:
-          'بررسی و نگهداری فورک‌های متن‌باز شامل کلاینت موسیقی چندسکویی SimpMusic مبتنی بر YouTube Music و مجموعه مهارت‌های ایجنت‌های هوش مصنوعی (Agent Skills).',
+          'بررسی و نگهداری فورک‌های متن‌باز شامل کلاینت موسیقی چندسکویی SimpMusic مبتنی بر YouTube Music و مجموعه مهارت‌های ایجنت‌های هوش مصنوعی \u2066(Agent Skills)\u2069.',
         architectureNotes:
           'استفاده از معماری مدرن اندروید برای استریم صوتی در SimpMusic و ساختاردهی ماژولار دستورالعمل‌های ایجنت‌های هوشمند در مخزن skills.',
         highlights: [
