@@ -1,870 +1,322 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>آزمایشگاه پژوهش‌های کوانتومی و اندروید | Mohammad Taha Azizi Ahad — Quantum & Security Lab</title>
-    <meta name="description" content="آزمایشگاه فوق‌پیشرفته و تعاملی پژوهش‌های رمزنگاری پساکوانتوم (ML-KEM-768)، ارزیابی امنیتی، مهندسی معکوس و هوش مصنوعی محمد طاها عزیزی احد.">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Research & Experimental Prototypes | Mohammad Taha Azizi Ahad — The Lab</title>
+    <meta name="description" content="Experimental prototypes, post-quantum cryptographic engineering (ML-KEM-768), Android reverse engineering, and AI systems by Mohammad Taha Azizi Ahad (indirect-b).">
     <link rel="canonical" href="https://indirect-b.is-a.dev/lab">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=m2">
     <link rel="alternate icon" type="image/png" href="/assets/meta/favicon-32x32.png?v=m2">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;800&family=Orbitron:wght@600;800;900&family=Vazirmatn:wght@400;500;700;800&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/meta/apple-touch-icon.png?v=m2">
     <style>
-        :root {
-            --neon-cyan: #00e5ff;
-            --neon-magenta: #f55aa0;
-            --neon-gold: #ffe66e;
-            --bg-dark: #040507;
-            --panel-bg: rgba(10, 14, 22, 0.75);
-            --border-glow: rgba(0, 229, 255, 0.25);
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background: #060709;
+            color: #e4e7eb;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            overflow-x: hidden;
+            line-height: 1.6;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
-        body, html {
-            width: 100%; height: 100%;
-            background: var(--bg-dark);
-            color: #d1d7e0;
-            font-family: 'Vazirmatn', -apple-system, sans-serif;
-            overflow: hidden;
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 32px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            backdrop-filter: blur(12px);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: rgba(6,7,9,0.85);
         }
-        #canvas-container {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 1; pointer-events: auto;
-        }
-        .scanlines {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
-            background-size: 100% 4px, 6px 100%;
-            pointer-events: none; z-index: 10; opacity: 0.6;
-        }
-        .hud-overlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 20; pointer-events: none; display: flex; flex-direction: column;
-            justify-content: space-between; padding: 24px 32px;
-        }
-        .hud-header {
-            display: flex; justify-content: space-between; align-items: center;
-            pointer-events: auto;
-        }
-        .brand-box {
-            display: flex; align-items: center; gap: 14px;
-            background: rgba(6, 10, 16, 0.85); backdrop-filter: blur(16px);
-            padding: 8px 18px; border-radius: 30px; border: 1px solid var(--border-glow);
-            box-shadow: 0 0 25px rgba(0, 229, 255, 0.15);
-        }
-        .brand-badge {
-            width: 32px; height: 32px; border-radius: 50%;
-            border: 1.5px solid var(--neon-cyan); display: flex; align-items: center;
-            justify-content: center; font-family: 'Orbitron', monospace; font-weight: 900;
-            color: #fff; text-shadow: 0 0 10px var(--neon-cyan); font-size: 14px;
-        }
-        .brand-text {
-            font-family: 'Orbitron', sans-serif; font-size: 13px; font-weight: 800;
-            letter-spacing: 0.15em; color: #fff;
-        }
-        .brand-status {
-            font-size: 10px; color: #3fb950; font-family: 'JetBrains Mono', monospace;
-            display: flex; align-items: center; gap: 6px;
-        }
-        .status-dot {
-            width: 6px; height: 6px; border-radius: 50%; background: #3fb950;
-            box-shadow: 0 0 8px #3fb950; animation: pulse 2s infinite;
-        }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-        .nav-actions { display: flex; align-items: center; gap: 14px; }
-        .audio-toggle, .btn-action {
-            background: rgba(6, 10, 16, 0.85); border: 1px solid var(--border-glow);
-            color: #fff; padding: 9px 18px; border-radius: 20px; font-size: 12px;
-            font-family: 'JetBrains Mono', monospace; cursor: pointer; backdrop-filter: blur(12px);
-            transition: all 0.25s ease; display: flex; align-items: center; gap: 8px;
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            color: #fff;
             text-decoration: none;
         }
-        .audio-toggle:hover, .btn-action:hover {
-            border-color: var(--neon-cyan); box-shadow: 0 0 20px rgba(0, 229, 255, 0.3);
-            transform: translateY(-2px); color: var(--neon-cyan);
+        .brand-badge {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #00e5ff;
         }
-        .hud-center-prompt {
-            text-align: center; pointer-events: none;
-            transition: opacity 0.5s ease;
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 20px;
         }
-        .hud-center-prompt h1 {
-            font-family: 'Orbitron', sans-serif; font-size: clamp(24px, 4vw, 42px);
-            font-weight: 900; color: #fff; letter-spacing: 0.05em; margin-bottom: 8px;
-            text-shadow: 0 0 30px rgba(0, 229, 255, 0.4);
+        .nav-link {
+            color: #8b949e;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s;
         }
-        .hud-center-prompt p {
-            font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #8b949e;
-            letter-spacing: 0.1em;
+        .nav-link:hover { color: #fff; }
+        .back-btn {
+            background: rgba(0, 229, 255, 0.1);
+            color: #00e5ff;
+            border: 1px solid rgba(0, 229, 255, 0.3);
+            padding: 8px 16px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
         }
-        .hud-footer {
-            display: flex; justify-content: space-between; align-items: flex-end;
-            pointer-events: auto;
-        }
-        .telemetry-box {
-            background: rgba(6, 10, 16, 0.85); border: 1px solid rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(16px); padding: 12px 18px; border-radius: 12px;
-            font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #8b949e;
-            display: flex; flex-direction: column; gap: 4px;
-        }
-        .telemetry-row { display: flex; justify-content: space-between; gap: 16px; }
-        .telemetry-val { color: var(--neon-cyan); font-weight: 600; }
-        .quick-selector {
-            display: flex; gap: 8px; flex-wrap: wrap; max-width: 600px;
-        }
-        .selector-chip {
-            background: rgba(6, 10, 16, 0.85); border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #8b949e; padding: 7px 14px; border-radius: 20px; font-size: 12px;
-            font-family: 'JetBrains Mono', monospace; cursor: pointer; transition: all 0.2s;
-        }
-        .selector-chip:hover, .selector-chip.active {
-            border-color: var(--neon-cyan); color: #fff; background: rgba(0, 229, 255, 0.12);
+        .back-btn:hover {
+            background: rgba(0, 229, 255, 0.2);
             box-shadow: 0 0 15px rgba(0, 229, 255, 0.2);
         }
-
-        /* Modal Dialog / Holographic Project Window */
-        .holo-modal {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.95);
-            width: min(92vw, 760px); max-height: 85vh; background: rgba(6, 9, 15, 0.94);
-            border: 1px solid var(--neon-cyan); border-radius: 20px; z-index: 100;
-            backdrop-filter: blur(24px); box-shadow: 0 0 50px rgba(0, 229, 255, 0.25), 0 20px 40px rgba(0,0,0,0.8);
-            display: flex; flex-direction: column; opacity: 0; pointer-events: none;
-            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        .hero {
+            padding: 80px 32px 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
         }
-        .holo-modal.open {
-            opacity: 1; pointer-events: auto; transform: translate(-50%, -50%) scale(1);
+        .hero-tag {
+            display: inline-block;
+            font-size: 12px;
+            letter-spacing: 0.2em;
+            color: #00e5ff;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+            padding: 4px 12px;
+            background: rgba(0,229,255,0.06);
+            border-radius: 12px;
+            border: 1px solid rgba(0,229,255,0.15);
         }
-        .modal-header {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 20px 28px; border-bottom: 1px solid rgba(0, 229, 255, 0.2);
+        .hero h1 {
+            font-size: clamp(32px, 5vw, 54px);
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: #ffffff;
+            margin-bottom: 16px;
         }
-        .modal-title { font-size: 20px; font-weight: 800; color: #fff; }
-        .modal-badge {
-            font-size: 11px; font-family: 'JetBrains Mono', monospace; color: var(--neon-cyan);
-            background: rgba(0, 229, 255, 0.1); padding: 4px 10px; border-radius: 12px;
+        .hero p {
+            font-size: 18px;
+            color: #8b949e;
+            max-width: 680px;
+            margin: 0 auto;
         }
-        .modal-close {
-            background: transparent; border: none; color: #8b949e; font-size: 24px;
-            cursor: pointer; transition: color 0.2s; padding: 4px 8px;
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 24px;
+            max-width: 1200px;
+            margin: 40px auto 80px;
+            padding: 0 32px;
         }
-        .modal-close:hover { color: #fff; }
-        .modal-body {
-            padding: 24px 28px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px;
+        .card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+            position: relative;
+            overflow: hidden;
         }
-        .modal-desc { font-size: 14px; line-height: 1.8; color: #c9d1d9; }
-        
-        /* Interactive Simulator Box */
-        .sim-chamber {
-            background: rgba(0, 0, 0, 0.6); border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 14px; padding: 18px; font-family: 'JetBrains Mono', monospace;
-            display: flex; flex-direction: column; gap: 12px;
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(0, 229, 255, 0.4);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(0, 229, 255, 0.1);
         }
-        .sim-title { font-size: 12px; color: var(--neon-gold); letter-spacing: 0.1em; }
-        .sim-output {
-            background: #020305; border: 1px solid rgba(0, 229, 255, 0.2); border-radius: 8px;
-            padding: 12px; font-size: 12px; color: #3fb950; min-height: 80px; max-height: 160px;
-            overflow-y: auto; white-space: pre-wrap; word-break: break-all;
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
         }
-        .sim-btn-row { display: flex; gap: 10px; }
-        .sim-btn {
-            background: rgba(0, 229, 255, 0.15); border: 1px solid var(--neon-cyan);
-            color: #fff; padding: 8px 16px; border-radius: 8px; font-size: 12px;
-            cursor: pointer; transition: all 0.2s; font-family: 'JetBrains Mono', monospace;
+        .card-tag {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #00e5ff;
+            background: rgba(0, 229, 255, 0.08);
+            padding: 4px 10px;
+            border-radius: 8px;
         }
-        .sim-btn:hover {
-            background: rgba(0, 229, 255, 0.3); box-shadow: 0 0 15px rgba(0, 229, 255, 0.4);
+        .card-date {
+            font-size: 12px;
+            color: #555e69;
         }
-        .modal-footer {
-            padding: 18px 28px; border-top: 1px solid rgba(255, 255, 255, 0.08);
-            display: flex; justify-content: space-between; align-items: center;
+        .card h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 10px;
         }
-        .ext-link {
-            background: var(--neon-cyan); color: #000; font-weight: 700; font-size: 13px;
-            padding: 9px 20px; border-radius: 20px; text-decoration: none; display: flex;
-            align-items: center; gap: 8px; transition: all 0.2s;
+        .card p {
+            font-size: 14px;
+            color: #8b949e;
+            margin-bottom: 20px;
+            flex-grow: 1;
         }
-        .ext-link:hover {
-            background: #fff; box-shadow: 0 0 20px rgba(0, 229, 255, 0.6);
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding-top: 16px;
         }
-        @media (max-width: 768px) {
-            .hud-overlay { padding: 16px; }
-            .telemetry-box { display: none; }
-            .quick-selector { max-width: 100%; justify-content: center; }
-            .hud-center-prompt h1 { font-size: 22px; }
+        .card-link {
+            color: #00e5ff;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .card-link:hover { text-decoration: underline; }
+        .card-status {
+            font-size: 11px;
+            color: #3fb950;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #3fb950;
+            box-shadow: 0 0 8px #3fb950;
+        }
+        footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            padding: 40px 32px;
+            text-align: center;
+            font-size: 13px;
+            color: #555e69;
         }
     </style>
 </head>
 <body>
-    <!-- Background 3D WebGL Canvas -->
-    <div id="canvas-container"></div>
-    <div class="scanlines"></div>
+    <header>
+        <a href="/" class="brand">
+            <div class="brand-badge">M</div>
+            <span>INDIRECT LAB // 2026</span>
+        </a>
+        <div class="nav-links">
+            <a href="https://github.com/indirect-b" target="_blank" class="nav-link">GitHub</a>
+            <a href="https://dev.to/indirectb" target="_blank" class="nav-link">DEV.to</a>
+            <a href="/" class="back-btn">
+                <span>← Back to 3D Experience</span>
+            </a>
+        </div>
+    </header>
 
-    <!-- HUD Overlay -->
-    <div class="hud-overlay">
-        <!-- Top Navigation -->
-        <header class="hud-header">
-            <div class="brand-box">
-                <div class="brand-badge">M</div>
-                <div>
-                    <div class="brand-text">INDIRECT RESEARCH LAB</div>
-                    <div class="brand-status"><span class="status-dot"></span>QUANTUM CORE ACTIVE // 60 FPS</div>
+    <main>
+        <section class="hero">
+            <div class="hero-tag">// EXPERIMENTAL PROTOTYPES & LAB</div>
+            <h1>Research Lab & Experiments</h1>
+            <p>A playground for testing and deploying post-quantum cryptographic primitives, zero-knowledge tokens, Android bytecode engineering, and neural models.</p>
+        </section>
+
+        <section class="grid">
+            <!-- Exp 1 -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-tag">Post-Quantum Crypto</span>
+                    <span class="card-date">2026</span>
+                </div>
+                <h2>ratchet-pq // ML-KEM-768 + ECDH</h2>
+                <p>Hybrid post-quantum ratchet protocol implementation combining NIST FIPS 203 ML-KEM-768 lattice key encapsulation with Curve P-256 and aggressive in-memory key scrubbing.</p>
+                <div class="card-footer">
+                    <span class="card-status"><span class="status-dot"></span>Active in chat-app</span>
+                    <a href="https://github.com/indirect-b/chat-app" target="_blank" class="card-link">View Source ↗</a>
                 </div>
             </div>
-            <div class="nav-actions">
-                <button class="audio-toggle" id="audioToggle">
-                    <span id="audioIcon">🔈</span>
-                    <span id="audioText">SOUND FX: OFF</span>
-                </button>
-                <a href="/" class="btn-action">
-                    <span>بازگشت به شوکیس ۳ بعدی</span>
-                    <span>←</span>
-                </a>
-            </div>
-        </header>
 
-        <!-- Center Prompt (Fades when modal opens) -->
-        <div class="hud-center-prompt" id="centerPrompt">
-            <h1>آزمایشگاه پروتوتایپ‌های کوانتومی و امنیتی</h1>
-            <p>// CLICK OR DRAG 3D PRISMS TO ENGAGE LAB MODULES</p>
-        </div>
-
-        <!-- Bottom Telemetry & Quick Selector -->
-        <footer class="hud-footer">
-            <div class="telemetry-box">
-                <div class="telemetry-row"><span>CORE:</span> <span class="telemetry-val">ML-KEM LATTICE MATRIX</span></div>
-                <div class="telemetry-row"><span>PARTICLES:</span> <span class="telemetry-val">12,000 GPU NODES</span></div>
-                <div class="telemetry-row"><span>SECURITY:</span> <span class="telemetry-val">NIST FIPS 203 COMPLIANT</span></div>
-                <div class="telemetry-row"><span>STATUS:</span> <span class="telemetry-val">PROTOTYPES MOUNTED</span></div>
-            </div>
-
-            <div class="quick-selector" id="quickSelector">
-                <!-- Dynamically populated chips -->
-            </div>
-        </footer>
-    </div>
-
-    <!-- Holographic Interactive Modal -->
-    <div class="holo-modal" id="holoModal">
-        <div class="modal-header">
-            <div>
-                <div class="modal-title" id="mTitle">PROTOTYPE TITLE</div>
-                <span class="modal-badge" id="mCategory">POST-QUANTUM CRYPTO</span>
-            </div>
-            <button class="modal-close" id="mClose">&times;</button>
-        </div>
-        <div class="modal-body">
-            <p class="modal-desc" id="mDesc">Description</p>
-            
-            <!-- Live Interactive Experiment Chamber -->
-            <div class="sim-chamber" id="simChamber">
-                <div class="sim-title" id="simTitle">// LIVE INTERACTIVE TESTBENCH</div>
-                <div class="sim-output" id="simOutput">// Awaiting execution...</div>
-                <div class="sim-btn-row">
-                    <button class="sim-btn" id="simActionBtn">▶ RUN BENCHMARK</button>
-                    <button class="sim-btn" id="simClearBtn" style="border-color: rgba(255,255,255,0.2); color: #8b949e;">CLEAR</button>
+            <!-- Exp 2 -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-tag">Zero-Knowledge</span>
+                    <span class="card-date">RFC 9497</span>
+                </div>
+                <h2>VOPRF // Ristretto255 Blinded Tokens</h2>
+                <p>Unlinkable blinded token issuance engine using verifiable oblivious pseudorandom functions over Curve25519 Ristretto group for metadata-private authentication.</p>
+                <div class="card-footer">
+                    <span class="card-status"><span class="status-dot"></span>Production Ready</span>
+                    <a href="https://dev.to/indirectb" target="_blank" class="card-link">Read Research ↗</a>
                 </div>
             </div>
-        </div>
-        <div class="modal-footer">
-            <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #555e69;">DIRECT REPOSITORY & RESEARCH LINK</span>
-            <a href="#" target="_blank" class="ext-link" id="mLink">مشاهده سورس در گیت‌هاب ↗</a>
-        </div>
-    </div>
-    <script>
-    // --- 1. RESEARCH PROTOTYPES DATA ---
-    const PROTOTYPES = [
-        {
-            id: 'pq-kem',
-            title: 'ratchet-pq // ML-KEM-768 + ECDH Hybrid',
-            category: 'POST-QUANTUM CRYPTOGRAPHY',
-            badge: 'NIST FIPS 203',
-            color: 0x00e5ff,
-            desc: 'پیاده‌سازی پروتکل نشست رمزنگاری دوگانه پساکوانتوم. ادغام الگوریتم استاندارد NIST ML-KEM-768 (مبتنی بر شبکه‌های جبری ماژولار) با تبادل کلید سنتی منحنی بیضوی ECDH P-256 و پاکسازی عمیق حافظه رم جهت جلوگیری از حملات بازخوانی حافظه.',
-            url: 'https://github.com/indirect-b/chat-app',
-            runSim: function() {
-                const start = performance.now();
-                const pkBytes = Math.floor(1184);
-                const ctBytes = Math.floor(1088);
-                const polyDeg = 768;
-                const modulus = 3329;
-                const elapsed = (performance.now() - start + 0.14).toFixed(3);
-                return `[ML-KEM-768 ENGINE INITIALIZED]
-> Sampling error vector e ~ Beta_2(D)... OK
-> Generating matrix A in R_q^(k x k) [k=3, n=${polyDeg}, q=${modulus}]... OK
-> Public Key Size: ${pkBytes} bytes | Ciphertext Size: ${ctBytes} bytes
-> Hybrid Shared Secret: 0x${Array.from({length: 16}, () => Math.floor(Math.random()*256).toString(16).padStart(2,'0')).join('')}...
-> Ephemeral memory scrub: SECURE_WIPE_ZERO() OK
-> Benchmark Execution: ${elapsed} ms (Quantum-Safe Level 3 NIST)`;
-            }
-        },
-        {
-            id: 'voprf',
-            title: 'VOPRF // Ristretto255 Blinded Tokens',
-            category: 'ZERO-KNOWLEDGE PRIVACY',
-            badge: 'RFC 9497 COMPLIANT',
-            color: 0xf55aa0,
-            desc: 'موتور صدور توکن‌های احراز هویت بدون امکان ردیابی. کاربر با استفاده از پروتکل VOPRF روی گروه جبری Ristretto255 توکن‌ها را کور کرده و سرور بدون آگاهی از هویت کاربر، صحت توکن را امضا می‌کند تا از ردیابی کلاینت‌ها جلوگیری شود.',
-            url: 'https://dev.to/indirectb',
-            runSim: function() {
-                const token = Array.from({length: 8}, () => Math.floor(Math.random()*256).toString(16).padStart(2,'0')).join('');
-                return `[RFC 9497 VOPRF RISTRETTO255]
-> Generating client blinding scalar r in Z_p... OK
-> Blinded Element: P = r * HashToGroup("user_ctx_${token}")
-> Evaluating Server Blind Evaluation: Q = k * P
-> Unblinding Token: S = (1/r) * Q == k * HashToGroup()
-> Zero-Knowledge Proof: PASS (Server key consistency verified)
-> Token Status: ANONYMOUS, UNLINKABLE, FORGERY-RESISTANT`;
-            }
-        },
-        {
-            id: 'ace-editor',
-            title: 'ACE Code Editor // AI-Assisted Android IDE',
-            category: 'NATIVE ANDROID & AI',
-            badge: 'MEXT RESEARCH',
-            color: 0xffe66e,
-            desc: 'محیط توسعه بومی اندروید توسعه داده شده با Jetpack Compose مدرن، هایلایت نحوی بلادرنگ، مدیریت پروژه‌های Room و یکپارچگی عمیق با API هوش مصنوعی گوگل جمینای برای تحلیل و رفع خطاهای سورس‌کد در دستگاه همراه.',
-            url: 'https://github.com/indirect-b',
-            runSim: function() {
-                return `[ACE IDE RUNTIME - KOTLIN COMPOSABLE]
-@Composable
-fun AceQuantumView(state: EditorState) {
-    val astTree = remember { parseSyntax(state.source) }
-    GeminiModel.analyze(astTree) { diagnostics ->
-        HighlightSpans(diagnostics.suggestions)
-    }
-}
-> AST Parsing: 1,420 tokens parsed in 1.2ms
-> Local Memory: 32MB resident
-> Gemini Semantic Linting: 0 syntax errors, 2 optimization tips available`;
-            }
-        },
-        {
-            id: 'smali-analyzer',
-            title: 'Smali Multi-DEX Bytecode Analyzer',
-            category: 'REVERSE ENGINEERING',
-            badge: 'BINARY HARDENING',
-            color: 0x78ffb4,
-            desc: 'جعبه‌ابزار تحلیل ساختار بسته‌های نصبی اندروید (APK)، مهندسی معکوس کدهای سطح بایت‌کد Smali در اپلیکیشن‌های چندکلاسه (Multi-DEX)، تحلیل دسترسی‌های سیستمی و مسدودسازی مکانیزم‌های رهگیری در پروتکل‌های شبکه.',
-            url: 'https://github.com/indirect-b/canada-vpn',
-            runSim: function() {
-                return `[DEX BYTECODE DISASSEMBLY STREAM]
-.method public static checkIntegrity(Landroid/content/Context;)Z
-    .registers 4
-    const/4 v0, 0x1
-    sget-object v1, Landroid/os/Build;->TAGS:Ljava/lang/String;
-    const-string v2, "test-keys"
-    invoke-virtual {v1, v2}, Ljava/lang/String;->contains(Ljava/lang/CharSequence;)Z
-    move-result v1
-    if-eqz v1, :cond_secure
-    const/4 v0, 0x0
-    :cond_secure
-    return v0
-.end method
-> Binary Hardening: Anti-Tamper hook inserted successfully`;
-            }
-        },
-        {
-            id: 'proverif',
-            title: 'Double Ratchet Formal Protocol Verification',
-            category: 'FORMAL VERIFICATION',
-            badge: 'APPLIED PI-CALCULUS',
-            color: 0x8a70ff,
-            desc: 'اعتبارسنجی ریاضی امنیت پروتکل رچت متقارن با شبیه‌ساز اثبات فرمال ProVerif. بررسی شکست‌ناپذیری کلیدها در سناریوهای نشت کلید پیشین (Forward Secrecy) و بازیابی خودکار امنیت پس از نفوذ (Post-Compromise Security).',
-            url: 'https://dev.to/indirectb',
-            runSim: function() {
-                return `[PROVERIF 2.05 FORMAL VERIFICATION ENGINE]
--- Query not attacker(secret_msg_stage_N[])
-Completing equations...
-Starting verification queries:
-RESULT not attacker(secret_msg[]) is true.
-RESULT event(RatchetStepReceived(k, m)) ==> event(RatchetStepSent(k, m)) is true.
--- Forward Secrecy: PROVED (0 leakage on root compromise)
--- Post-Compromise Recovery: PROVED within 1 round-trip ratchet step.`;
-            }
-        },
-        {
-            id: 'apk-ci',
-            title: 'Automated Cloud APK Build Pipelines',
-            category: 'DEVOPS & CLOUD AUTOMATION',
-            badge: 'GITHUB ACTIONS CI/CD',
-            color: 0x3fb950,
-            desc: 'اتوماسیون بیلد یکپارچه پروژه‌های اندروید در محیط ابری GitHub Actions بدون وابستگی به گنو/لینوکس یا ابزارهای محلی، امضای دیجیتال بسته‌ها، تولید خودکار معماری‌های arm64-v8a و armeabi-v7a و استقرار بلادرنگ.',
-            url: 'https://github.com/indirect-b',
-            runSim: function() {
-                return `[GITHUB ACTIONS CI/CD PIPELINE MATRIX]
-jobs:
-  build-apk:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Setup JDK 17 & Android SDK Tools
-      - name: Assemble Release APK (Gradle Daemon active)
-        run: ./gradlew assembleRelease --no-daemon
-      - name: Sign & Align APK with zipalign + apksigner
-> Output: app-release-signed.apk (14.2 MB) | SHA256: 7f83b1... OK
-> Status: CI/CD PIPELINE SUCCEEDED (Duration: 1m 42s)`;
-            }
-        }
-    ];
 
-    // --- 2. WEBAUDIO SYNTHESIZER ENGINE (ZERO EXTERNAL ASSETS) ---
-    class CyberAudio {
-        constructor() {
-            this.ctx = null;
-            this.enabled = false;
-        }
-        init() {
-            if (!this.ctx) {
-                this.ctx = new (window.AudioContext || window.webkitAudioContext)();
-            }
-            if (this.ctx.state === 'suspended') {
-                this.ctx.resume();
-            }
-            this.enabled = true;
-        }
-        playHover() {
-            if (!this.enabled || !this.ctx) return;
-            const now = this.ctx.currentTime;
-            const osc = this.ctx.createOscillator();
-            const gain = this.ctx.createGain();
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(440, now);
-            osc.frequency.exponentialRampToValueAtTime(880, now + 0.12);
-            gain.gain.setValueAtTime(0.08, now);
-            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
-            osc.connect(gain);
-            gain.connect(this.ctx.destination);
-            osc.start(now);
-            osc.stop(now + 0.12);
-        }
-        playClick() {
-            if (!this.enabled || !this.ctx) return;
-            const now = this.ctx.currentTime;
-            const osc = this.ctx.createOscillator();
-            const gain = this.ctx.createGain();
-            osc.type = 'triangle';
-            osc.frequency.setValueAtTime(800, now);
-            osc.frequency.exponentialRampToValueAtTime(240, now + 0.15);
-            gain.gain.setValueAtTime(0.12, now);
-            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
-            osc.connect(gain);
-            gain.connect(this.ctx.destination);
-            osc.start(now);
-            osc.stop(now + 0.15);
-        }
-        playPulse() {
-            if (!this.enabled || !this.ctx) return;
-            const now = this.ctx.currentTime;
-            const osc = this.ctx.createOscillator();
-            const gain = this.ctx.createGain();
-            osc.type = 'sawtooth';
-            osc.frequency.setValueAtTime(150, now);
-            osc.frequency.linearRampToValueAtTime(300, now + 0.3);
-            gain.gain.setValueAtTime(0.06, now);
-            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
-            osc.connect(gain);
-            gain.connect(this.ctx.destination);
-            osc.start(now);
-            osc.stop(now + 0.3);
-        }
-    }
-    const audio = new CyberAudio();
-    // --- 3. THREE.JS 3D SCENE & ENGINE ---
-    const container = document.getElementById('canvas-container');
-    const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x040507, 0.035);
+            <!-- Exp 3 -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-tag">AI & Android</span>
+                    <span class="card-date">MEXT</span>
+                </div>
+                <h2>ACE Code Editor // AI Assistant</h2>
+                <p>Native Android IDE crafted with Jetpack Compose M3, real-time syntax highlighting, Room project state, and deep Gemini API integration for on-device code analysis.</p>
+                <div class="card-footer">
+                    <span class="card-status"><span class="status-dot"></span>Prototype</span>
+                    <a href="https://github.com/indirect-b" target="_blank" class="card-link">View Repository ↗</a>
+                </div>
+            </div>
 
-    const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
-    camera.position.set(0, 0, 14);
+            <!-- Exp 4 -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-tag">Reverse Engineering</span>
+                    <span class="card-date">DEX / Smali</span>
+                </div>
+                <h2>canada-vpn // Multi-DEX Tunneling</h2>
+                <p>Deep APK bytecode architecture inspection, multi-class DEX decompilation, and Android VpnService background lifecycle optimization for resilient packet tunneling.</p>
+                <div class="card-footer">
+                    <span class="card-status"><span class="status-dot"></span>Hardened</span>
+                    <a href="https://github.com/indirect-b/canada-vpn" target="_blank" class="card-link">Inspect Package ↗</a>
+                </div>
+            </div>
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    container.appendChild(renderer.domElement);
+            <!-- Exp 5 -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-tag">Formal Verification</span>
+                    <span class="card-date">ProVerif</span>
+                </div>
+                <h2>Double Ratchet Formal Modeling</h2>
+                <p>Mathematical state-machine modeling in applied pi-calculus verifying forward secrecy bounds, post-compromise security, and side-channel leakage resistance.</p>
+                <div class="card-footer">
+                    <span class="card-status"><span class="status-dot"></span>Formally Proved</span>
+                    <a href="https://dev.to/indirectb" target="_blank" class="card-link">Read on DEV ↗</a>
+                </div>
+            </div>
 
-    // Quantum Lattice Particle Field (12,000 particles)
-    const particleCount = 12000;
-    const geometry = new THREE.BufferGeometry();
-    const positions = new Float32Array(particleCount * 3);
-    const colors = new Float32Array(particleCount * 3);
+            <!-- Exp 6 -->
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-tag">CI/CD Automation</span>
+                    <span class="card-date">Cloud Matrix</span>
+                </div>
+                <h2>Automated APK Build Pipelines</h2>
+                <p>Hermetic cloud compilation pipelines with GitHub Actions for automated Android testing, multi-arch APK matrix generation (arm64-v8a/v7a), and code signing.</p>
+                <div class="card-footer">
+                    <span class="card-status"><span class="status-dot"></span>Operational</span>
+                    <a href="https://github.com/indirect-b" target="_blank" class="card-link">View Actions ↗</a>
+                </div>
+            </div>
+        </section>
+    </main>
 
-    const color1 = new THREE.Color(0x00e5ff); // Cyan
-    const color2 = new THREE.Color(0xf55aa0); // Magenta
-    const color3 = new THREE.Color(0xffe66e); // Gold
-
-    for (let i = 0; i < particleCount; i++) {
-        // Multi-shell quantum distribution
-        const u = Math.random();
-        const v = Math.random();
-        const theta = u * 2.0 * Math.PI;
-        const phi = Math.acos(2.0 * v - 1.0);
-        const r = 2.0 + Math.pow(Math.random(), 2.0) * 8.5;
-
-        const x = r * Math.sin(phi) * Math.cos(theta);
-        const y = r * Math.sin(phi) * Math.sin(theta);
-        const z = r * Math.cos(phi);
-
-        positions[i * 3] = x;
-        positions[i * 3 + 1] = y;
-        positions[i * 3 + 2] = z;
-
-        // Color gradient based on radius
-        let c = color1.clone();
-        if (r < 4.0) c.lerp(color3, r / 4.0);
-        else c.lerp(color2, (r - 4.0) / 6.5);
-
-        colors[i * 3] = c.r;
-        colors[i * 3 + 1] = c.g;
-        colors[i * 3 + 2] = c.b;
-    }
-
-    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-
-    const pMaterial = new THREE.PointsMaterial({
-        size: 0.045,
-        vertexColors: true,
-        transparent: true,
-        opacity: 0.75,
-        blending: THREE.AdditiveBlending
-    });
-
-    const particleSystem = new THREE.Points(geometry, pMaterial);
-    scene.add(particleSystem);
-
-    // Center Quantum Core: Geometric Prismatic Icosahedron + Wireframe Rings
-    const coreGroup = new THREE.Group();
-    scene.add(coreGroup);
-
-    const coreGeo = new THREE.IcosahedronGeometry(1.6, 1);
-    const coreMat = new THREE.MeshBasicMaterial({
-        color: 0x00e5ff,
-        wireframe: true,
-        transparent: true,
-        opacity: 0.4
-    });
-    const coreMesh = new THREE.Mesh(coreGeo, coreMat);
-    coreGroup.add(coreMesh);
-
-    const ringGeo1 = new THREE.TorusGeometry(2.3, 0.02, 16, 100);
-    const ringMat1 = new THREE.MeshBasicMaterial({ color: 0xffe66e, transparent: true, opacity: 0.6 });
-    const ringMesh1 = new THREE.Mesh(ringGeo1, ringMat1);
-    coreGroup.add(ringMesh1);
-
-    const ringGeo2 = new THREE.TorusGeometry(2.6, 0.015, 16, 100);
-    const ringMat2 = new THREE.MeshBasicMaterial({ color: 0xf55aa0, transparent: true, opacity: 0.5 });
-    const ringMesh2 = new THREE.Mesh(ringGeo2, ringMat2);
-    ringMesh2.rotation.x = Math.PI / 2.5;
-    coreGroup.add(ringMesh2);
-
-    // 6 Orbiting 3D Glass Prototype Modules
-    const prismMeshes = [];
-    const orbitRadius = 6.2;
-
-    function createTextSprite(text, colorHex) {
-        const canvas = document.createElement('canvas');
-        canvas.width = 256; canvas.height = 64;
-        const ctx = canvas.getContext('2d');
-        ctx.fillStyle = 'rgba(0, 0, 0, 0)';
-        ctx.fillRect(0, 0, 256, 64);
-        ctx.font = 'bold 26px Orbitron, monospace';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillStyle = colorHex;
-        ctx.shadowColor = colorHex;
-        ctx.shadowBlur = 12;
-        ctx.fillText(text, 128, 32);
-
-        const tex = new THREE.CanvasTexture(canvas);
-        const spriteMat = new THREE.SpriteMaterial({ map: tex, transparent: true });
-        const sprite = new THREE.Sprite(spriteMat);
-        sprite.scale.set(2.4, 0.6, 1);
-        return sprite;
-    }
-
-    PROTOTYPES.forEach((proto, idx) => {
-        const angle = (idx / PROTOTYPES.length) * Math.PI * 2;
-        const group = new THREE.Group();
-
-        // 3D Octahedron / Prism Mesh
-        const pGeo = new THREE.OctahedronGeometry(0.85, 0);
-        const pMat = new THREE.MeshPhongMaterial({
-            color: proto.color,
-            emissive: proto.color,
-            emissiveIntensity: 0.25,
-            shininess: 90,
-            transparent: true,
-            opacity: 0.65,
-            wireframe: false
-        });
-        const mesh = new THREE.Mesh(pGeo, pMat);
-
-        // Glowing Wireframe Outline
-        const wireMat = new THREE.MeshBasicMaterial({
-            color: proto.color,
-            wireframe: true,
-            transparent: true,
-            opacity: 0.9
-        });
-        const wireMesh = new THREE.Mesh(pGeo, wireMat);
-        wireMesh.scale.setScalar(1.05);
-        mesh.add(wireMesh);
-
-        group.add(mesh);
-
-        // Floating Title Sprite above prism
-        const shortName = proto.id.toUpperCase();
-        const hexStr = '#' + proto.color.toString(16).padStart(6, '0');
-        const sprite = createTextSprite(shortName, hexStr);
-        sprite.position.y = 1.35;
-        group.add(sprite);
-
-        group.position.x = Math.cos(angle) * orbitRadius;
-        group.position.z = Math.sin(angle) * orbitRadius;
-        group.position.y = (idx % 2 === 0 ? 0.8 : -0.8);
-
-        group.userData = {
-            proto: proto,
-            baseAngle: angle,
-            baseY: group.position.y,
-            mesh: mesh,
-            index: idx
-        };
-
-        scene.add(group);
-        prismMeshes.push(group);
-    });
-
-    // Lights
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
-    scene.add(ambientLight);
-
-    const pointLight = new THREE.PointLight(0x00e5ff, 2.5, 30);
-    scene.add(pointLight);
-
-    const pointLight2 = new THREE.PointLight(0xf55aa0, 2.0, 30);
-    pointLight2.position.set(0, -5, 0);
-    scene.add(pointLight2);
-
-    // Quick Selector Chips in Footer
-    const selectorContainer = document.getElementById('quickSelector');
-    PROTOTYPES.forEach((proto, idx) => {
-        const chip = document.createElement('div');
-        chip.className = 'selector-chip';
-        chip.textContent = '// ' + proto.id;
-        chip.onclick = () => openModal(proto);
-        selectorContainer.appendChild(chip);
-    });
-
-    // Audio Button
-    const audioToggle = document.getElementById('audioToggle');
-    const audioText = document.getElementById('audioText');
-    const audioIcon = document.getElementById('audioIcon');
-    audioToggle.onclick = () => {
-        audio.init();
-        if (audio.enabled) {
-            audio.playPulse();
-            audioText.textContent = 'SOUND FX: ON';
-            audioIcon.textContent = '🔊';
-            audioToggle.style.borderColor = 'var(--neon-cyan)';
-            audioToggle.style.color = 'var(--neon-cyan)';
-        }
-    };
-
-    // Modal Interaction
-    const modal = document.getElementById('holoModal');
-    const mClose = document.getElementById('mClose');
-    const mTitle = document.getElementById('mTitle');
-    const mCategory = document.getElementById('mCategory');
-    const mDesc = document.getElementById('mDesc');
-    const mLink = document.getElementById('mLink');
-    const simOutput = document.getElementById('simOutput');
-    const simActionBtn = document.getElementById('simActionBtn');
-    const simClearBtn = document.getElementById('simClearBtn');
-    const centerPrompt = document.getElementById('centerPrompt');
-
-    let currentProto = null;
-
-    function openModal(proto) {
-        audio.playClick();
-        currentProto = proto;
-        mTitle.textContent = proto.title;
-        mCategory.textContent = proto.category + ' // ' + proto.badge;
-        mDesc.textContent = proto.desc;
-        mLink.href = proto.url;
-        simOutput.textContent = '// Ready to execute ' + proto.id + ' testbench...';
-        modal.classList.add('open');
-        centerPrompt.style.opacity = '0';
-    }
-
-    function closeModal() {
-        audio.playClick();
-        modal.classList.remove('open');
-        centerPrompt.style.opacity = '1';
-        currentProto = null;
-    }
-
-    mClose.onclick = closeModal;
-    window.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
-
-    simActionBtn.onclick = () => {
-        audio.playPulse();
-        if (currentProto && currentProto.runSim) {
-            simOutput.textContent = currentProto.runSim();
-        }
-    };
-
-    simClearBtn.onclick = () => {
-        simOutput.textContent = '// Cleared.';
-    };
-
-    // Raycasting & Interaction
-    const raycaster = new THREE.Raycaster();
-    const mouse = new THREE.Vector2();
-    let hoveredMesh = null;
-    let isDragging = false;
-    let previousMouseX = 0;
-    let previousMouseY = 0;
-    let rotationVelocityX = 0;
-    let rotationVelocityY = 0;
-
-    window.addEventListener('mousedown', (e) => {
-        if (e.target.closest('.hud-overlay') || e.target.closest('.holo-modal')) return;
-        isDragging = true;
-        previousMouseX = e.clientX;
-        previousMouseY = e.clientY;
-    });
-
-    window.addEventListener('mousemove', (e) => {
-        mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
-        mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
-
-        if (isDragging) {
-            const deltaX = e.clientX - previousMouseX;
-            const deltaY = e.clientY - previousMouseY;
-            rotationVelocityY = deltaX * 0.004;
-            rotationVelocityX = deltaY * 0.004;
-            previousMouseX = e.clientX;
-            previousMouseY = e.clientY;
-        }
-
-        // Raycasting for hover
-        raycaster.setFromCamera(mouse, camera);
-        const clickable = prismMeshes.map(g => g.userData.mesh);
-        const intersects = raycaster.intersectObjects(clickable, false);
-
-        if (intersects.length > 0) {
-            const group = intersects[0].object.parent;
-            if (hoveredMesh !== group) {
-                hoveredMesh = group;
-                audio.playHover();
-                document.body.style.cursor = 'pointer';
-            }
-        } else {
-            if (hoveredMesh) {
-                hoveredMesh = null;
-                document.body.style.cursor = 'default';
-            }
-        }
-    });
-
-    window.addEventListener('mouseup', () => { isDragging = false; });
-
-    window.addEventListener('click', (e) => {
-        if (e.target.closest('.hud-overlay') || e.target.closest('.holo-modal')) return;
-        raycaster.setFromCamera(mouse, camera);
-        const clickable = prismMeshes.map(g => g.userData.mesh);
-        const intersects = raycaster.intersectObjects(clickable, false);
-        if (intersects.length > 0) {
-            const group = intersects[0].object.parent;
-            openModal(group.userData.proto);
-        }
-    });
-
-    // Touch support for mobile devices
-    window.addEventListener('touchstart', (e) => {
-        if (e.touches.length === 1) {
-            isDragging = true;
-            previousMouseX = e.touches[0].clientX;
-            previousMouseY = e.touches[0].clientY;
-        }
-    }, { passive: true });
-
-    window.addEventListener('touchmove', (e) => {
-        if (isDragging && e.touches.length === 1) {
-            const deltaX = e.touches[0].clientX - previousMouseX;
-            const deltaY = e.touches[0].clientY - previousMouseY;
-            rotationVelocityY = deltaX * 0.005;
-            rotationVelocityX = deltaY * 0.005;
-            previousMouseX = e.touches[0].clientX;
-            previousMouseY = e.touches[0].clientY;
-        }
-    }, { passive: true });
-
-    window.addEventListener('touchend', () => { isDragging = false; });
-
-    // Resize Handler
-    window.addEventListener('resize', () => {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-    });
-
-    // --- 4. RENDER LOOP ---
-    let clock = new THREE.Clock();
-    let orbitAngleOffset = 0;
-
-    function animate() {
-        requestAnimationFrame(animate);
-        const delta = clock.getDelta();
-        const time = clock.getElapsedTime();
-
-        // Orbit momentum decay
-        orbitAngleOffset += rotationVelocityY;
-        camera.position.y += rotationVelocityX * 8.0;
-        camera.position.y = Math.max(-5, Math.min(5, camera.position.y));
-        camera.lookAt(0, 0, 0);
-
-        rotationVelocityY *= 0.94;
-        rotationVelocityX *= 0.94;
-
-        // Auto slow orbit
-        orbitAngleOffset += delta * 0.15;
-
-        // Animate Core
-        coreMesh.rotation.x = time * 0.4;
-        coreMesh.rotation.y = time * 0.6;
-        ringMesh1.rotation.z = time * 0.5;
-        ringMesh2.rotation.y = time * 0.35;
-
-        // Animate Particles with Wave Perturbation
-        particleSystem.rotation.y = time * 0.05;
-        particleSystem.rotation.x = Math.sin(time * 0.1) * 0.1;
-
-        // Animate 6 Prototype Prisms in Orbit
-        prismMeshes.forEach((group, idx) => {
-            const angle = group.userData.baseAngle + orbitAngleOffset;
-            group.position.x = Math.cos(angle) * orbitRadius;
-            group.position.z = Math.sin(angle) * orbitRadius;
-            group.position.y = group.userData.baseY + Math.sin(time * 1.5 + idx) * 0.35;
-
-            // Rotate individual prism
-            const mesh = group.userData.mesh;
-            mesh.rotation.x = time * 0.8 + idx;
-            mesh.rotation.y = time * 1.0 + idx;
-
-            // Hover Scale Tween
-            if (hoveredMesh === group) {
-                group.scale.lerp(new THREE.Vector3(1.35, 1.35, 1.35), 0.15);
-            } else {
-                group.scale.lerp(new THREE.Vector3(1.0, 1.0, 1.0), 0.15);
-            }
-        });
-
-        renderer.render(scene, camera);
-    }
-    animate();
-    </script>
+    <footer>
+        <p>© 2026 Mohammad Taha Azizi Ahad (indirect-b) — All experimental prototypes are released under open-source licenses.</p>
+    </footer>
 </body>
 </html>
